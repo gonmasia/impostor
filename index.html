@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>El Impostor - Juego de Pistas</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Pantalla de Inicio -->
+    <div id="screen-start" class="screen active">
+        <div class="container">
+            <h1>🎭 EL IMPOSTOR</h1>
+            <p>Juego de pistas y deducción</p>
+
+            <div class="config">
+                <label>Número de jugadores (4-10):</label>
+                <input type="number" id="playerCount" min="4" max="10" value="6">
+
+                <label>Temática:</label>
+                <select id="category" onchange="game.handleCategoryChange()">
+                    <option value="comida">🍕 Comida</option>
+                    <option value="animales">🐶 Animales</option>
+                    <option value="peliculas">🎬 Películas</option>
+                    <option value="deportes">⚽ Deportes</option>
+                    <option value="lugares">🌍 Lugares</option>
+                    <option value="profesiones">👨‍⚕️ Profesiones</option>
+                    <option value="objetos">📱 Objetos</option>
+                    <option value="vehiculos">🚗 Vehículos</option>
+                    <option value="festividades">🎄 Festividades</option>
+                    <option value="musica">🎵 Música</option>
+                    <option value="naturaleza">🌳 Naturaleza</option>
+                    <option value="tecnologia">💻 Tecnología</option>
+                    <option value="aleatorio">🎲 Aleatorio</option>
+                    <option value="personalizada">✨ Personalizada</option>
+                </select>
+
+                <div id="customWordsSection" style="display: none;">
+                    <label>Escribe tus palabras (separadas por comas):</label>
+                    <textarea id="customWords" placeholder="Pizza, Hamburguesa, Tacos, Sushi, Pasta..." rows="4"></textarea>
+                    <p class="info" style="font-size: 0.85rem; margin-top: 5px;">Mínimo 10 palabras para jugar</p>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="game.goToNameEntry()">CONTINUAR</button>
+        </div>
+    </div>
+
+    <!-- Pantalla de Ingreso de Nombres -->
+    <div id="screen-names" class="screen">
+        <div class="container">
+            <h2>Ingresa los Nombres</h2>
+            <p>Cada jugador ingresará su nombre</p>
+
+            <div id="nameInputs" class="name-inputs">
+                <!-- Los inputs se generarán dinámicamente -->
+            </div>
+
+            <button class="btn-primary" onclick="game.startGame()">COMENZAR PARTIDA</button>
+            <button class="btn-secondary" onclick="game.backToStart()">VOLVER</button>
+        </div>
+    </div>
+
+    <!-- Pantalla de Asignación de Palabra -->
+    <div id="screen-reveal" class="screen">
+        <div class="container">
+            <h2><span id="currentPlayerName"></span></h2>
+            <p class="warning">⚠️ No dejes que otros vean tu palabra</p>
+            <button class="btn-primary" onclick="game.revealWord()">VER MI PALABRA</button>
+        </div>
+    </div>
+
+    <!-- Pantalla de Palabra Revelada -->
+    <div id="screen-word" class="screen">
+        <div class="container">
+            <div id="wordDisplay"></div>
+            <button class="btn-primary" onclick="game.nextPlayer()">SIGUIENTE JUGADOR</button>
+        </div>
+    </div>
+
+    <!-- Pantalla Final -->
+    <div id="screen-final" class="screen">
+        <div class="container">
+            <h2>🎭 ¡A JUGAR!</h2>
+            <p>Todos ya conocen sus roles</p>
+            <p class="info">Discutan entre ustedes y descubran al impostor</p>
+
+            <div class="final-info">
+                <h3>Palabra secreta:</h3>
+                <div class="secret-word-reveal"></div>
+                <p class="warning">⚠️ No dejes que el impostor vea esto</p>
+            </div>
+
+            <button class="btn-primary" onclick="game.playAgain()">JUGAR</button>
+            <button class="btn-secondary" onclick="game.endGame()">TERMINAR</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
