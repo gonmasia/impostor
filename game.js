@@ -244,14 +244,9 @@ const game = {
         const wordDisplay = document.getElementById('wordDisplay');
 
         if (player.isImpostor) {
-            const impostorText = this.impostorCount > 1
-                ? `<p style="font-size: 1rem; margin-top: 10px; color: #f39c12;">⚠️ Hay ${this.impostorCount} impostores en total (incluyéndote)</p>`
-                : '';
-
             wordDisplay.innerHTML = `
                 <div class="word-card impostor">
                     <h1>🎭 ERES EL IMPOSTOR</h1>
-                    ${impostorText}
                     <p style="font-size: 1.2rem; margin-top: 20px;">
                         Escucha las pistas de los demás e intenta adivinar la palabra secreta.
                         Debes dar pistas convincentes sin saber cuál es la palabra.
