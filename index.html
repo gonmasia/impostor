@@ -31,6 +31,13 @@
                 <label>Número de jugadores (4-10):</label>
                 <input type="number" id="playerCount" min="4" max="10" value="6">
 
+                <label>Número de impostores:</label>
+                <select id="impostorCount">
+                    <option value="1">1 Impostor</option>
+                    <option value="2">2 Impostores</option>
+                    <option value="3">3 Impostores</option>
+                </select>
+
                 <label>Temática:</label>
                 <select id="category" onchange="game.handleCategoryChange()">
                     <option value="comida">🍕 Comida</option>

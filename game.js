@@ -66,6 +66,8 @@ const wordDatabase = {
 const game = {
     players: [],
     impostorIndex: null,
+    impostorIndexes: [],
+    impostorCount: 1,
     secretWord: '',
     category: '',
     totalRounds: 3,
@@ -94,13 +96,20 @@ const game = {
     // Ir a pantalla de ingreso de nombres
     goToNameEntry() {
         const playerCount = parseInt(document.getElementById('playerCount').value);
+        const impostorCount = parseInt(document.getElementById('impostorCount').value);
 
         if (playerCount < 4 || playerCount > 10) {
             alert('El número de jugadores debe estar entre 4 y 10');
             return;
         }
 
+        if (impostorCount >= playerCount) {
+            alert('El número de impostores debe ser menor al número de jugadores');
+            return;
+        }
+
         this.playerCount = playerCount;
+        this.impostorCount = impostorCount;
         this.category = document.getElementById('category').value;
 
         // Si es personalizada, validar y guardar las palabras
@@ -171,9 +180,19 @@ const game = {
             });
         }
 
-        // Seleccionar impostor aleatorio
-        this.impostorIndex = Math.floor(Math.random() * this.playerCount);
-        this.players[this.impostorIndex].isImpostor = true;
+        // Seleccionar impostores aleatorios
+        this.impostorIndexes = [];
+        const availableIndexes = [...Array(this.playerCount).keys()];
+
+        for (let i = 0; i < this.impostorCount; i++) {
+            const randomIdx = Math.floor(Math.random() * availableIndexes.length);
+            const impostorIdx = availableIndexes.splice(randomIdx, 1)[0];
+            this.impostorIndexes.push(impostorIdx);
+            this.players[impostorIdx].isImpostor = true;
+        }
+
+        // Mantener compatibilidad con código viejo
+        this.impostorIndex = this.impostorIndexes[0];
 
         // Seleccionar palabra secreta
         this.selectSecretWord();
@@ -225,9 +244,14 @@ const game = {
         const wordDisplay = document.getElementById('wordDisplay');
 
         if (player.isImpostor) {
+            const impostorText = this.impostorCount > 1
+                ? `<p style="font-size: 1rem; margin-top: 10px; color: #f39c12;">⚠️ Hay ${this.impostorCount} impostores en total (incluyéndote)</p>`
+                : '';
+
             wordDisplay.innerHTML = `
                 <div class="word-card impostor">
                     <h1>🎭 ERES EL IMPOSTOR</h1>
+                    ${impostorText}
                     <p style="font-size: 1.2rem; margin-top: 20px;">
                         Escucha las pistas de los demás e intenta adivinar la palabra secreta.
                         Debes dar pistas convincentes sin saber cuál es la palabra.
@@ -292,11 +316,21 @@ const game = {
 
     // Jugar de nuevo
     playAgain() {
-        // Reiniciar con los mismos jugadores pero nueva palabra y nuevo impostor
-        this.impostorIndex = Math.floor(Math.random() * this.players.length);
-        this.players.forEach((p, i) => {
-            p.isImpostor = (i === this.impostorIndex);
-        });
+        // Reiniciar con los mismos jugadores pero nueva palabra y nuevos impostores
+        this.players.forEach(p => p.isImpostor = false);
+
+        this.impostorIndexes = [];
+        const availableIndexes = [...Array(this.players.length).keys()];
+
+        for (let i = 0; i < this.impostorCount; i++) {
+            const randomIdx = Math.floor(Math.random() * availableIndexes.length);
+            const impostorIdx = availableIndexes.splice(randomIdx, 1)[0];
+            this.impostorIndexes.push(impostorIdx);
+            this.players[impostorIdx].isImpostor = true;
+        }
+
+        // Mantener compatibilidad
+        this.impostorIndex = this.impostorIndexes[0];
 
         this.selectSecretWord();
         this.currentPlayerIndex = 0;
