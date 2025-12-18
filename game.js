@@ -300,11 +300,6 @@ const game = {
 
     // Mostrar pantalla final para jugar
     showFinalScreen() {
-        const finalInfo = document.querySelector('.final-info');
-        const impostor = this.players[this.impostorIndex];
-
-        document.querySelector('.secret-word-reveal').textContent = this.secretWord;
-
         this.showScreen('screen-final');
     },
 
