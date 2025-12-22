@@ -535,6 +535,63 @@ p {
     margin: 30px 0;
 }
 
+/* Orden de juego */
+.play-order-section {
+    background: rgba(102, 126, 234, 0.2);
+    border: 2px solid #667eea;
+    padding: 25px;
+    border-radius: 12px;
+    margin: 30px 0;
+}
+
+.play-order-section h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.play-order-list {
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.player-order-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    margin: 8px 0;
+    transition: all 0.2s;
+}
+
+.player-order-item:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateX(5px);
+}
+
+.order-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.player-name {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
 .final-info h3 {
     color: #3498db;
     margin-bottom: 15px;

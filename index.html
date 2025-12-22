@@ -104,7 +104,14 @@
         <div class="container">
             <h2>🎭 ¡A JUGAR!</h2>
             <p>Todos ya conocen sus roles</p>
-            <p class="info">Discutan entre ustedes y descubran al impostor</p>
+
+            <div class="play-order-section">
+                <h3>📋 Orden de juego:</h3>
+                <div id="playOrderList" class="play-order-list">
+                    <!-- Se genera dinámicamente -->
+                </div>
+                <p class="info" style="margin-top: 15px;">Den sus pistas en este orden</p>
+            </div>
 
             <button class="btn-primary" onclick="game.playAgain()">JUGAR NUEVA RONDA</button>
             <button class="btn-secondary" onclick="game.endGame()">TERMINAR</button>

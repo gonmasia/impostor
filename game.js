@@ -294,22 +294,10 @@ const game = {
                 </div>
             `;
         } else {
-            const startsFirstBadge = player.startsFirst
-                ? `<div style="background: rgba(255, 215, 0, 0.3); border: 2px solid #ffd700; padding: 15px; border-radius: 10px; margin-top: 20px;">
-                    <p style="font-size: 1.1rem; font-weight: bold; color: #ffd700; margin: 0;">
-                        ⭐ ¡TÚ EMPIEZAS EL JUEGO!
-                    </p>
-                    <p style="font-size: 0.9rem; margin-top: 8px; opacity: 0.9;">
-                        Serás el primero en dar una pista
-                    </p>
-                   </div>`
-                : '';
-
             wordDisplay.innerHTML = `
                 <div class="word-card crewmate">
                     <h1>🔍 TU PALABRA ES:</h1>
                     <div class="secret-word">${this.secretWord}</div>
-                    ${startsFirstBadge}
                     <p style="font-size: 1rem; margin-top: 20px; opacity: 0.9;">
                         Da pistas que ayuden a otros a identificar al impostor,<br>
                         pero no reveles la palabra directamente.
@@ -344,7 +332,30 @@ const game = {
 
     // Mostrar pantalla final para jugar
     showFinalScreen() {
+        // Generar el orden de jugadores
+        const playOrder = this.generatePlayOrder();
+        const orderListHTML = playOrder.map((player, index) => {
+            return `<div class="player-order-item">
+                        <span class="order-number">${index + 1}</span>
+                        <span class="player-name">${player.name}</span>
+                    </div>`;
+        }).join('');
+
+        document.getElementById('playOrderList').innerHTML = orderListHTML;
         this.showScreen('screen-final');
+    },
+
+    // Generar orden de juego empezando desde startingPlayerIndex
+    generatePlayOrder() {
+        const order = [];
+        const totalPlayers = this.players.length;
+
+        for (let i = 0; i < totalPlayers; i++) {
+            const playerIndex = (this.startingPlayerIndex + i) % totalPlayers;
+            order.push(this.players[playerIndex]);
+        }
+
+        return order;
     },
 
 
