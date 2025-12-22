@@ -73,6 +73,7 @@ const game = {
     totalRounds: 3,
     currentRound: 0,
     currentPlayerIndex: 0,
+    startingPlayerIndex: 0,
     roundClues: [],
     allClues: [],
     votes: {},
@@ -194,6 +195,9 @@ const game = {
         // Mantener compatibilidad con código viejo
         this.impostorIndex = this.impostorIndexes[0];
 
+        // Seleccionar jugador que empieza (estrategia inteligente)
+        this.selectStartingPlayer();
+
         // Seleccionar palabra secreta
         this.selectSecretWord();
 
@@ -203,6 +207,34 @@ const game = {
 
         this.showScreen('screen-reveal');
         this.updateRevealScreen();
+    },
+
+    // Seleccionar jugador inicial de manera inteligente
+    selectStartingPlayer() {
+        // Crear lista de jugadores que NO son impostores
+        const nonImpostors = [];
+        this.players.forEach((player, index) => {
+            if (!player.isImpostor) {
+                nonImpostors.push(index);
+            }
+        });
+
+        // Estrategia: elegir a alguien del "medio" del grupo (entre 30% y 70% de la lista)
+        // Esto hace que los impostores tengan que escuchar varias pistas antes de hablar
+        const thirtyPercent = Math.floor(nonImpostors.length * 0.3);
+        const seventyPercent = Math.floor(nonImpostors.length * 0.7);
+
+        // Si el grupo es muy pequeño, usar todo el rango
+        const startRange = nonImpostors.length > 3 ? thirtyPercent : 0;
+        const endRange = nonImpostors.length > 3 ? seventyPercent : nonImpostors.length;
+
+        // Seleccionar aleatoriamente dentro del rango del medio
+        const middleRange = nonImpostors.slice(startRange, endRange);
+        const randomMiddleIdx = Math.floor(Math.random() * middleRange.length);
+        this.startingPlayerIndex = middleRange[randomMiddleIdx];
+
+        // Marcar quién empieza
+        this.players[this.startingPlayerIndex].startsFirst = true;
     },
 
     // Seleccionar palabra secreta
@@ -262,10 +294,22 @@ const game = {
                 </div>
             `;
         } else {
+            const startsFirstBadge = player.startsFirst
+                ? `<div style="background: rgba(255, 215, 0, 0.3); border: 2px solid #ffd700; padding: 15px; border-radius: 10px; margin-top: 20px;">
+                    <p style="font-size: 1.1rem; font-weight: bold; color: #ffd700; margin: 0;">
+                        ⭐ ¡TÚ EMPIEZAS EL JUEGO!
+                    </p>
+                    <p style="font-size: 0.9rem; margin-top: 8px; opacity: 0.9;">
+                        Serás el primero en dar una pista
+                    </p>
+                   </div>`
+                : '';
+
             wordDisplay.innerHTML = `
                 <div class="word-card crewmate">
                     <h1>🔍 TU PALABRA ES:</h1>
                     <div class="secret-word">${this.secretWord}</div>
+                    ${startsFirstBadge}
                     <p style="font-size: 1rem; margin-top: 20px; opacity: 0.9;">
                         Da pistas que ayuden a otros a identificar al impostor,<br>
                         pero no reveles la palabra directamente.
@@ -307,7 +351,10 @@ const game = {
     // Jugar de nuevo
     playAgain() {
         // Reiniciar con los mismos jugadores pero nueva palabra y nuevos impostores
-        this.players.forEach(p => p.isImpostor = false);
+        this.players.forEach(p => {
+            p.isImpostor = false;
+            p.startsFirst = false;
+        });
 
         this.impostorIndexes = [];
         const availableIndexes = [...Array(this.players.length).keys()];
@@ -321,6 +368,9 @@ const game = {
 
         // Mantener compatibilidad
         this.impostorIndex = this.impostorIndexes[0];
+
+        // Seleccionar nuevo jugador inicial
+        this.selectStartingPlayer();
 
         this.selectSecretWord();
         this.currentPlayerIndex = 0;
