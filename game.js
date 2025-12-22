@@ -59,6 +59,13 @@ const wordDatabase = {
         'Internet', 'WiFi', 'Email', 'Redes Sociales', 'Instagram', 'Facebook', 'YouTube',
         'Netflix', 'Spotify', 'Google', 'App', 'Software', 'Hardware', 'Mouse', 'Teclado',
         'Monitor', 'USB', 'Bluetooth', 'Tablet', 'Smartwatch', 'Videojuego', 'PlayStation'
+    ],
+    argentina: [
+        'Maradona', 'Messi', 'Gardel', 'Evita Perón', 'San Martín', 'Sarmiento', 'Borges',
+        'Charly García', 'Soda Stereo', 'Fangio', 'Del Potro', 'Ginóbili', 'Batistuta',
+        'Riquelme', 'Kempes', 'Mafalda', 'Les Luthiers', 'Mirtha Legrand', 'Susana Giménez',
+        'Ricardo Darín', 'Fito Páez', 'Mercedes Sosa', 'Tango', 'Asado', 'Mate',
+        'Obelisco', 'Iguazú', 'Glaciar Perito Moreno', 'Boca Juniors', 'River Plate'
     ]
 };
 
