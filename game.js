@@ -66,6 +66,34 @@ const wordDatabase = {
         'Riquelme', 'Kempes', 'Mafalda', 'Les Luthiers', 'Mirtha Legrand', 'Susana Giménez',
         'Ricardo Darín', 'Fito Páez', 'Mercedes Sosa', 'Tango', 'Asado', 'Mate',
         'Obelisco', 'Iguazú', 'Glaciar Perito Moreno', 'Boca Juniors', 'River Plate'
+    ],
+    series: [
+        'Los Simuladores', 'Casados con Hijos', 'Okupas', 'El Marginal', 'Stranger Things',
+        'Breaking Bad', 'Game of Thrones', 'Friends', 'The Office', 'La Casa de Papel',
+        'Narcos', 'Black Mirror', 'The Crown', 'Peaky Blinders', 'Squid Game',
+        'The Mandalorian', 'Wednesday', 'The Last of Us', 'The Boys', 'Sex Education'
+    ],
+    videojuegos: [
+        'FIFA', 'Fortnite', 'Minecraft', 'GTA', 'Call of Duty', 'League of Legends',
+        'Counter Strike', 'Valorant', 'Among Us', 'Fall Guys', 'Rocket League', 'Overwatch',
+        'The Last of Us', 'God of War', 'Zelda', 'Mario Bros', 'Pokemon', 'Roblox',
+        'Free Fire', 'PUBG', 'Clash Royale', 'Candy Crush', 'Subway Surfers'
+    ],
+    marcasargentinas: [
+        'Arcor', 'Quilmes', 'Fernet Branca', 'Havanna', 'Terma', 'Bagley', 'Milka Argentina',
+        'La Serenísima', 'Marolio', 'Cindor', 'Sancor', 'Cachafaz', 'Tofi', 'Águila',
+        'YPF', 'Aerolíneas Argentinas', 'Mercado Libre', 'Globant', 'Despegar', 'Farmacity'
+    ],
+    comidasargentinas: [
+        'Asado', 'Empanadas', 'Milanesa', 'Choripán', 'Locro', 'Mate', 'Dulce de Leche',
+        'Alfajor', 'Facturas', 'Pizza Argentina', 'Fugazzeta', 'Humita', 'Tamales', 'Provoleta',
+        'Chimichurri', 'Bife de Chorizo', 'Medialunas', 'Panqueques', 'Pastelitos', 'Fernet con Cola'
+    ],
+    provincias: [
+        'Buenos Aires', 'Córdoba', 'Santa Fe', 'Mendoza', 'Tucumán', 'Entre Ríos', 'Salta',
+        'Chaco', 'Corrientes', 'Misiones', 'Santiago del Estero', 'San Juan', 'Jujuy',
+        'Río Negro', 'Neuquén', 'Formosa', 'Chubut', 'San Luis', 'Catamarca', 'La Rioja',
+        'La Pampa', 'Santa Cruz', 'Tierra del Fuego'
     ]
 };
 
@@ -88,6 +116,204 @@ const game = {
     impostorScore: 0,
     usedWords: [],
     customWordsList: [],
+    darkMode: false,
+    gameHistory: [],
+    playerStats: {},
+    soundEnabled: true,
+
+    // Sound effects using Web Audio API
+    playSound(type) {
+        if (!this.soundEnabled) return;
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        switch(type) {
+            case 'click':
+                oscillator.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+                break;
+            case 'reveal':
+                oscillator.frequency.value = 600;
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                break;
+            case 'success':
+                oscillator.frequency.value = 523.25; // C5
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                oscillator.start(audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                oscillator.stop(audioContext.currentTime + 0.4);
+                break;
+        }
+    },
+
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        localStorage.setItem('impostorSound', this.soundEnabled ? 'on' : 'off');
+        const soundIcon = document.getElementById('soundIcon');
+        if (soundIcon) {
+            soundIcon.textContent = this.soundEnabled ? '🔊' : '🔇';
+        }
+    },
+
+    loadSoundPreference() {
+        const savedSound = localStorage.getItem('impostorSound');
+        if (savedSound === 'off') {
+            this.soundEnabled = false;
+            const soundIcon = document.getElementById('soundIcon');
+            if (soundIcon) {
+                soundIcon.textContent = '🔇';
+            }
+        }
+    },
+
+    // Toggle theme
+    toggleTheme() {
+        this.darkMode = !this.darkMode;
+        document.body.classList.toggle('light-mode');
+        const themeIcon = document.getElementById('themeIcon');
+        themeIcon.textContent = this.darkMode ? '☀️' : '🌙';
+
+        // Save to localStorage
+        localStorage.setItem('impostorTheme', this.darkMode ? 'light' : 'dark');
+    },
+
+    // Load theme from localStorage
+    loadTheme() {
+        const savedTheme = localStorage.getItem('impostorTheme');
+        if (savedTheme === 'light') {
+            this.darkMode = true;
+            document.body.classList.add('light-mode');
+            document.getElementById('themeIcon').textContent = '☀️';
+        }
+    },
+
+    // Save game to history
+    saveGameToHistory(winner, impostorGuessedWord = false) {
+        const gameData = {
+            id: Date.now(),
+            date: new Date().toISOString(),
+            players: this.players.map(p => ({
+                name: p.name,
+                isImpostor: p.isImpostor
+            })),
+            word: this.secretWord,
+            category: this.category,
+            winner: winner, // 'group' or 'impostor'
+            impostorGuessedWord: impostorGuessedWord,
+            impostorCount: this.impostorCount
+        };
+
+        // Load existing history
+        const history = JSON.parse(localStorage.getItem('impostorGameHistory') || '[]');
+        history.unshift(gameData); // Add to beginning
+
+        // Keep only last 50 games
+        if (history.length > 50) {
+            history.splice(50);
+        }
+
+        localStorage.setItem('impostorGameHistory', JSON.stringify(history));
+        this.updatePlayerStats(gameData);
+    },
+
+    // Update player statistics
+    updatePlayerStats(gameData) {
+        const stats = JSON.parse(localStorage.getItem('impostorPlayerStats') || '{}');
+
+        gameData.players.forEach(player => {
+            if (!stats[player.name]) {
+                stats[player.name] = {
+                    gamesPlayed: 0,
+                    gamesAsImpostor: 0,
+                    wins: 0,
+                    losses: 0
+                };
+            }
+
+            stats[player.name].gamesPlayed++;
+
+            if (player.isImpostor) {
+                stats[player.name].gamesAsImpostor++;
+                if (gameData.winner === 'impostor') {
+                    stats[player.name].wins++;
+                } else {
+                    stats[player.name].losses++;
+                }
+            } else {
+                if (gameData.winner === 'group') {
+                    stats[player.name].wins++;
+                } else {
+                    stats[player.name].losses++;
+                }
+            }
+        });
+
+        localStorage.setItem('impostorPlayerStats', JSON.stringify(stats));
+    },
+
+    // Load game history
+    loadGameHistory() {
+        return JSON.parse(localStorage.getItem('impostorGameHistory') || '[]');
+    },
+
+    // Load player stats
+    loadPlayerStats() {
+        return JSON.parse(localStorage.getItem('impostorPlayerStats') || '{}');
+    },
+
+    // Toggle instructions
+    toggleInstructions() {
+        const content = document.getElementById('instructionsContent');
+        const arrow = document.getElementById('instructionsArrow');
+
+        content.classList.toggle('collapsed');
+        arrow.classList.toggle('open');
+
+        this.playSound('click');
+    },
+
+    // Update impostor suggestion based on player count
+    updateImpostorSuggestion() {
+        const playerCount = parseInt(document.getElementById('playerCount').value);
+        const suggestionBadge = document.getElementById('impostorSuggestion');
+        const impostorInput = document.getElementById('impostorCount');
+
+        if (!playerCount || playerCount < 4) {
+            suggestionBadge.textContent = '';
+            return;
+        }
+
+        // Intelligent suggestion algorithm
+        let suggested;
+        if (playerCount <= 5) {
+            suggested = 1;
+        } else if (playerCount <= 8) {
+            suggested = 2;
+        } else if (playerCount <= 12) {
+            suggested = 3;
+        } else {
+            // For larger groups: roughly 25% impostors
+            suggested = Math.floor(playerCount * 0.25);
+        }
+
+        // Update max value for impostor input
+        impostorInput.max = Math.floor(playerCount / 2); // Max 50% impostors
+
+        suggestionBadge.textContent = `Sugerido: ${suggested}`;
+        suggestionBadge.setAttribute('data-suggested', suggested);
+    },
 
     // Manejar cambio de categoría
     handleCategoryChange() {
@@ -103,16 +329,27 @@ const game = {
 
     // Ir a pantalla de ingreso de nombres
     goToNameEntry() {
+        this.playSound('click');
         const playerCount = parseInt(document.getElementById('playerCount').value);
         const impostorCount = parseInt(document.getElementById('impostorCount').value);
 
-        if (playerCount < 4 || playerCount > 10) {
-            alert('El número de jugadores debe estar entre 4 y 10');
+        if (playerCount < 4) {
+            alert('El número de jugadores debe ser mínimo 4');
+            return;
+        }
+
+        if (impostorCount < 1) {
+            alert('Debe haber al menos 1 impostor');
             return;
         }
 
         if (impostorCount >= playerCount) {
             alert('El número de impostores debe ser menor al número de jugadores');
+            return;
+        }
+
+        if (impostorCount > Math.floor(playerCount / 2)) {
+            alert('El número de impostores no puede ser mayor al 50% de los jugadores');
             return;
         }
 
@@ -171,6 +408,7 @@ const game = {
 
     // Iniciar juego
     startGame() {
+        this.playSound('success');
         // Recoger nombres de jugadores
         this.players = [];
         for (let i = 1; i <= this.playerCount; i++) {
@@ -279,6 +517,7 @@ const game = {
 
     // Revelar palabra
     revealWord() {
+        this.playSound('reveal');
         const player = this.players[this.currentPlayerIndex];
         const wordDisplay = document.getElementById('wordDisplay');
 
@@ -368,6 +607,7 @@ const game = {
 
     // Jugar de nuevo
     playAgain() {
+        this.playSound('click');
         // Reiniciar con los mismos jugadores pero nueva palabra y nuevos impostores
         this.players.forEach(p => {
             p.isImpostor = false;
@@ -411,6 +651,188 @@ const game = {
         this.showScreen('screen-start');
     },
 
+    // View statistics
+    viewStats() {
+        this.renderStats();
+        this.showScreen('screen-stats');
+    },
+
+    // Back to final screen
+    backToFinal() {
+        this.showScreen('screen-final');
+    },
+
+    // Show stats tab
+    showStatsTab(tab) {
+        // Update tab buttons
+        document.querySelectorAll('.stats-tab').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+
+        // Update content
+        document.querySelectorAll('.stats-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        if (tab === 'history') {
+            document.getElementById('stats-history').classList.add('active');
+        } else if (tab === 'players') {
+            document.getElementById('stats-players').classList.add('active');
+        }
+    },
+
+    // Render statistics
+    renderStats() {
+        this.renderGameHistory();
+        this.renderPlayerStats();
+    },
+
+    // Render game history
+    renderGameHistory() {
+        const history = this.loadGameHistory();
+        const historyList = document.getElementById('gameHistoryList');
+
+        if (history.length === 0) {
+            historyList.innerHTML = '<p style="text-align: center; padding: 40px; opacity: 0.7;">No hay partidas jugadas aún</p>';
+            return;
+        }
+
+        historyList.innerHTML = history.map(game => {
+            const date = new Date(game.date);
+            const dateStr = date.toLocaleDateString('es-AR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const winnerText = game.winner === 'impostor' ? '🎭 Ganó el Impostor' : '👥 Ganó el Grupo';
+            const winClass = game.winner === 'impostor' ? 'impostor-win' : 'group-win';
+
+            return `
+                <div class="history-item ${winClass}">
+                    <div class="history-date">${dateStr}</div>
+                    <div class="history-word">Palabra: ${game.word}</div>
+                    <div style="font-size: 0.9rem; opacity: 0.8;">Categoría: ${game.category}</div>
+                    <div class="history-winner">${winnerText}</div>
+                    <div style="font-size: 0.85rem; opacity: 0.7; margin-top: 5px;">
+                        ${game.players.length} jugadores, ${game.impostorCount} impostor${game.impostorCount > 1 ? 'es' : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    // Share game
+    async shareGame() {
+        const stats = this.loadPlayerStats();
+        const history = this.loadGameHistory();
+
+        let shareText = `🎭 EL IMPOSTOR - Juego de pistas\n\n`;
+        shareText += `📊 Estadísticas de la partida:\n`;
+        shareText += `Jugadores: ${this.players.map(p => p.name).join(', ')}\n`;
+        shareText += `Palabra: ${this.secretWord}\n`;
+        shareText += `Categoría: ${this.category}\n\n`;
+        shareText += `¡Juega con nosotros! 🎮`;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'El Impostor - Juego de Pistas',
+                    text: shareText,
+                    url: window.location.href
+                });
+                this.playSound('success');
+            } catch (err) {
+                // User cancelled or error occurred
+                if (err.name !== 'AbortError') {
+                    this.copyToClipboard(shareText);
+                }
+            }
+        } else {
+            // Fallback to clipboard
+            this.copyToClipboard(shareText);
+        }
+    },
+
+    // Copy to clipboard fallback
+    copyToClipboard(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ ¡Texto copiado al portapapeles!');
+                this.playSound('success');
+            }).catch(() => {
+                alert('❌ No se pudo copiar el texto');
+            });
+        } else {
+            // Old method fallback
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                alert('✅ ¡Texto copiado al portapapeles!');
+                this.playSound('success');
+            } catch (err) {
+                alert('❌ No se pudo copiar el texto');
+            }
+            document.body.removeChild(textArea);
+        }
+    },
+
+    // Render player stats
+    renderPlayerStats() {
+        const stats = this.loadPlayerStats();
+        const statsList = document.getElementById('playerStatsList');
+
+        const players = Object.keys(stats);
+        if (players.length === 0) {
+            statsList.innerHTML = '<p style="text-align: center; padding: 40px; opacity: 0.7;">No hay estadísticas de jugadores aún</p>';
+            return;
+        }
+
+        // Sort by win rate
+        players.sort((a, b) => {
+            const winRateA = stats[a].gamesPlayed > 0 ? (stats[a].wins / stats[a].gamesPlayed) : 0;
+            const winRateB = stats[b].gamesPlayed > 0 ? (stats[b].wins / stats[b].gamesPlayed) : 0;
+            return winRateB - winRateA;
+        });
+
+        statsList.innerHTML = players.map((playerName, index) => {
+            const stat = stats[playerName];
+            const winRate = stat.gamesPlayed > 0 ? Math.round((stat.wins / stat.gamesPlayed) * 100) : 0;
+
+            return `
+                <div class="player-stat-card">
+                    <div class="player-stat-name">${index + 1}. ${playerName}</div>
+                    <div class="player-stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">${stat.gamesPlayed}</div>
+                            <div class="stat-label">Partidas</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${winRate}%</div>
+                            <div class="stat-label">Victorias</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stat.wins}</div>
+                            <div class="stat-label">Ganadas</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stat.gamesAsImpostor}</div>
+                            <div class="stat-label">Como Impostor</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
     // Mostrar pantalla
     showScreen(screenId) {
         document.querySelectorAll('.screen').forEach(screen => {
@@ -422,5 +844,8 @@ const game = {
 
 // Inicializar
 window.addEventListener('load', () => {
+    game.loadTheme();
+    game.loadSoundPreference();
+    game.updateImpostorSuggestion(); // Initialize impostor suggestion
     game.showScreen('screen-start');
 });
