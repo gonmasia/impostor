@@ -1,0 +1,71 @@
+🎉 ACTUALIZACIÓN - NOMBRES PERSONALIZADOS
+==========================================
+
+✅ NUEVA CARACTERÍSTICA AGREGADA:
+
+Ahora puedes ingresar nombres personalizados para cada jugador!
+
+CÓMO FUNCIONA:
+--------------
+
+1. En la pantalla inicial, configura:
+   - Número de jugadores
+   - Rondas de pistas
+   - Categoría
+
+2. Presiona "CONTINUAR" (antes decía "INICIAR JUEGO")
+
+3. ¡NUEVA PANTALLA!
+   Se abrirá una pantalla donde cada jugador puede ingresar su nombre
+
+   Ejemplo:
+   Jugador 1: [Ana_________]
+   Jugador 2: [Carlos______]
+   Jugador 3: [María_______]
+   Jugador 4: [Pedro_______]
+
+4. Los nombres ya vienen pre-llenados con "Jugador 1", "Jugador 2", etc.
+   - Puedes dejarlos así si quieres
+   - O cambiarlos por nombres reales
+
+5. Presiona "COMENZAR PARTIDA" y el juego inicia!
+
+VENTAJAS:
+---------
+✓ Más personal y divertido
+✓ Fácil identificar quién da cada pista
+✓ Mejor para acusar: "¡María es la impostora!"
+✓ Los nombres se usan en TODO el juego:
+  - Al revelar roles
+  - Al dar pistas
+  - En la votación
+  - En los resultados
+
+EJEMPLOS DE USO:
+----------------
+
+👨‍👩‍👧‍👦 CON FAMILIA:
+Jugador 1: Mamá
+Jugador 2: Papá
+Jugador 3: Ana
+Jugador 4: Luis
+
+🎉 CON AMIGOS:
+Jugador 1: Carlos
+Jugador 2: María
+Jugador 3: Pedro
+Jugador 4: Lucía
+
+😂 CON APODOS:
+Jugador 1: El Rápido
+Jugador 2: La Astuta
+Jugador 3: El Sabio
+Jugador 4: La Sospechosa
+
+TIPS:
+-----
+- Usa nombres cortos para que se vean bien en pantalla
+- Máximo recomendado: 12 caracteres
+- Si dejas un nombre vacío, se usará "Jugador X" automáticamente
+
+¡DIVIÉRTETE CON NOMBRES PERSONALIZADOS! 🎭

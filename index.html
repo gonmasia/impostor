@@ -140,6 +140,10 @@
         <div class="container">
             <h2>🎭 ¡A JUGAR!</h2>
             <p>Todos ya conocen sus roles</p>
+            <div id="sessionInfo" class="session-info" style="display: none;">
+                <span>📊 Ronda <span id="currentRoundNumber">1</span></span>
+                <span style="margin-left: 15px;">🎮 <span id="totalRoundsPlayed">0</span> jugadas</span>
+            </div>
 
             <div class="play-order-section">
                 <h3>📋 Orden de juego:</h3>
@@ -174,11 +178,18 @@
             <h2>📊 ESTADÍSTICAS</h2>
 
             <div class="stats-tabs">
-                <button class="stats-tab active" onclick="game.showStatsTab('history')">Historial</button>
+                <button class="stats-tab active" onclick="game.showStatsTab('session')">Sesión Actual</button>
+                <button class="stats-tab" onclick="game.showStatsTab('history')">Historial</button>
                 <button class="stats-tab" onclick="game.showStatsTab('players')">Jugadores</button>
             </div>
 
-            <div id="stats-history" class="stats-content active">
+            <div id="stats-session" class="stats-content active">
+                <div id="sessionRoundsList" class="session-rounds-list">
+                    <!-- Se genera dinámicamente -->
+                </div>
+            </div>
+
+            <div id="stats-history" class="stats-content">
                 <div id="gameHistoryList" class="history-list">
                     <!-- Se genera dinámicamente -->
                 </div>

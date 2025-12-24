@@ -121,6 +121,11 @@ const game = {
     playerStats: {},
     soundEnabled: true,
 
+    // Session management
+    sessionActive: false,
+    sessionRounds: [],
+    sessionStartTime: null,
+
     // Sound effects using Web Audio API
     playSound(type) {
         if (!this.soundEnabled) return;
@@ -426,6 +431,14 @@ const game = {
             });
         }
 
+        // Iniciar sesión de juego
+        if (!this.sessionActive) {
+            this.sessionActive = true;
+            this.sessionRounds = [];
+            this.sessionStartTime = new Date();
+            this.currentRound = 1;
+        }
+
         // Seleccionar impostores aleatorios
         this.impostorIndexes = [];
         const availableIndexes = [...Array(this.playerCount).keys()];
@@ -446,7 +459,6 @@ const game = {
         // Seleccionar palabra secreta
         this.selectSecretWord();
 
-        this.currentRound = 0;
         this.currentPlayerIndex = 0;
         this.allClues = [];
 
@@ -588,6 +600,14 @@ const game = {
         }).join('');
 
         document.getElementById('playOrderList').innerHTML = orderListHTML;
+
+        // Actualizar info de la sesión
+        if (this.sessionActive) {
+            document.getElementById('sessionInfo').style.display = 'flex';
+            document.getElementById('currentRoundNumber').textContent = this.currentRound;
+            document.getElementById('totalRoundsPlayed').textContent = this.sessionRounds.length;
+        }
+
         this.showScreen('screen-final');
     },
 
@@ -608,6 +628,10 @@ const game = {
     // Jugar de nuevo
     playAgain() {
         this.playSound('click');
+
+        // Incrementar contador de ronda
+        this.currentRound++;
+
         // Reiniciar con los mismos jugadores pero nueva palabra y nuevos impostores
         this.players.forEach(p => {
             p.isImpostor = false;
@@ -639,6 +663,12 @@ const game = {
 
     // Terminar juego y volver al inicio
     endGame() {
+        // Cerrar sesión
+        this.sessionActive = false;
+        this.sessionRounds = [];
+        this.sessionStartTime = null;
+        this.currentRound = 0;
+
         // Reiniciar todo
         this.players = [];
         this.impostorIndex = null;
@@ -664,11 +694,23 @@ const game = {
 
     // Declare winner and save game
     declareWinner(winner) {
+        // Guardar ronda en la sesión
+        const roundData = {
+            roundNumber: this.currentRound,
+            word: this.secretWord,
+            category: this.category,
+            winner: winner,
+            impostors: this.players.filter(p => p.isImpostor).map(p => p.name),
+            timestamp: new Date()
+        };
+        this.sessionRounds.push(roundData);
+
+        // Guardar en historial global
         this.saveGameToHistory(winner);
         this.playSound('success');
 
         const winnerText = winner === 'impostor' ? '🎭 ¡Ganó el Impostor!' : '👥 ¡Ganó el Grupo!';
-        alert(winnerText + '\n\nPartida guardada en estadísticas.');
+        alert(winnerText + `\n\nRonda ${this.currentRound} guardada.`);
 
         // Hide winner section after declaring
         document.getElementById('winnerSection').style.display = 'none';
@@ -698,7 +740,9 @@ const game = {
             content.classList.remove('active');
         });
 
-        if (tab === 'history') {
+        if (tab === 'session') {
+            document.getElementById('stats-session').classList.add('active');
+        } else if (tab === 'history') {
             document.getElementById('stats-history').classList.add('active');
         } else if (tab === 'players') {
             document.getElementById('stats-players').classList.add('active');
@@ -707,8 +751,65 @@ const game = {
 
     // Render statistics
     renderStats() {
+        this.renderSessionRounds();
         this.renderGameHistory();
         this.renderPlayerStats();
+    },
+
+    // Render session rounds
+    renderSessionRounds() {
+        const roundsList = document.getElementById('sessionRoundsList');
+
+        if (!this.sessionActive || this.sessionRounds.length === 0) {
+            roundsList.innerHTML = '<p style="text-align: center; padding: 40px; opacity: 0.7;">No hay rondas en esta sesión aún.<br><br>Declara un ganador después de cada ronda para verlas aquí.</p>';
+            return;
+        }
+
+        // Calculate session stats
+        const groupWins = this.sessionRounds.filter(r => r.winner === 'group').length;
+        const impostorWins = this.sessionRounds.filter(r => r.winner === 'impostor').length;
+
+        let html = `
+            <div class="session-summary">
+                <h3>📊 Resumen de la Sesión</h3>
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px;">
+                    <div class="session-stat">
+                        <div class="stat-value">${this.sessionRounds.length}</div>
+                        <div class="stat-label">Rondas</div>
+                    </div>
+                    <div class="session-stat">
+                        <div class="stat-value">${groupWins}</div>
+                        <div class="stat-label">👥 Grupo</div>
+                    </div>
+                    <div class="session-stat">
+                        <div class="stat-value">${impostorWins}</div>
+                        <div class="stat-label">🎭 Impostor</div>
+                    </div>
+                </div>
+            </div>
+            <h4 style="margin: 20px 0 10px 0; text-align: center; opacity: 0.8;">Historial de Rondas</h4>
+        `;
+
+        html += this.sessionRounds.map(round => {
+            const winnerText = round.winner === 'impostor' ? '🎭 Impostor' : '👥 Grupo';
+            const winClass = round.winner === 'impostor' ? 'impostor-win' : 'group-win';
+
+            return `
+                <div class="session-round-item ${winClass}">
+                    <div class="round-header">
+                        <span style="font-weight: bold;">Ronda ${round.roundNumber}</span>
+                        <span style="opacity: 0.8;">${round.category}</span>
+                    </div>
+                    <div class="round-word">${round.word}</div>
+                    <div class="round-winner">Ganó: ${winnerText}</div>
+                    <div style="font-size: 0.85rem; opacity: 0.7; margin-top: 5px;">
+                        Impostores: ${round.impostors.join(', ')}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        roundsList.innerHTML = html;
     },
 
     // Render game history

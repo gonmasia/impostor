@@ -720,6 +720,26 @@ p {
     }
 }
 
+/* Session info */
+.session-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    border-radius: 10px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+    margin: 15px 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.session-info span {
+    color: var(--text-color);
+}
+
 .warning {
     color: #f39c12;
     font-weight: bold;
@@ -1199,6 +1219,87 @@ p {
     max-height: 400px;
     overflow-y: auto;
     margin: 20px 0;
+}
+
+/* Session rounds styles */
+.session-rounds-list {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    max-height: 450px;
+    overflow-y: auto;
+    margin: 20px 0;
+}
+
+.session-summary {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.session-summary h3 {
+    margin: 0 0 15px 0;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.session-stat {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    flex: 1;
+}
+
+.session-stat .stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.session-stat .stat-label {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.session-round-item {
+    background: var(--card-bg-hover);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    border-left: 4px solid var(--accent-color);
+}
+
+.session-round-item.impostor-win {
+    border-left-color: #e74c3c;
+}
+
+.session-round-item.group-win {
+    border-left-color: #27ae60;
+}
+
+.round-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.round-word {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin: 10px 0;
+}
+
+.round-winner {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 8px;
 }
 
 .history-item {

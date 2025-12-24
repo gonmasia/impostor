@@ -1,0 +1,90 @@
+📱 CÓMO USAR EL JUEGO EN TU CELULAR
+====================================
+
+🎯 OPCIÓN MÁS FÁCIL Y RÁPIDA:
+------------------------------
+
+1. Abre WhatsApp Web en tu PC (web.whatsapp.com)
+
+2. Envíate a ti mismo el archivo:
+   "el-impostor-actualizado.zip"
+   (está en esta misma carpeta)
+
+3. En tu celular:
+   - Abre WhatsApp
+   - Ve al chat contigo mismo
+   - Descarga el archivo ZIP
+   - Toca el archivo para abrirlo
+   - Se extraerán 3 archivos:
+     * index.html
+     * styles.css
+     * game.js
+
+4. Abre "index.html" con Chrome o Safari
+
+5. ¡A JUGAR! 🎉
+
+
+📧 ALTERNATIVA - EMAIL:
+----------------------
+
+1. Envíate un email con el archivo "el-impostor-actualizado.zip"
+2. Abre el email en tu celular
+3. Descarga el ZIP
+4. Extrae los archivos
+5. Abre index.html
+
+
+☁️ ALTERNATIVA - GOOGLE DRIVE:
+------------------------------
+
+1. Sube "el-impostor-actualizado.zip" a Google Drive
+2. Desde tu celular, abre Google Drive
+3. Descarga el archivo
+4. Extrae los archivos
+5. Abre index.html
+
+
+✅ IMPORTANTE:
+-------------
+
+Los 3 archivos DEBEN estar en la misma carpeta:
+- index.html
+- styles.css
+- game.js
+
+Si no están juntos, el juego no funcionará.
+
+
+🎮 NUEVA FUNCIÓN - TEMÁTICA PERSONALIZADA:
+------------------------------------------
+
+Ahora puedes crear tus propias listas de palabras:
+
+1. En "Temática" selecciona "✨ Personalizada"
+2. Escribe tus palabras separadas por comas
+3. Mínimo 10 palabras
+
+Ejemplos:
+---------
+
+⚽ Futbolistas:
+Messi, Ronaldo, Neymar, Mbappé, Haaland, Benzema,
+Lewandowski, De Bruyne, Modric, Salah, Kane, Son
+
+🎬 Series:
+Breaking Bad, Game of Thrones, Stranger Things, The Crown,
+Friends, La Casa de Papel, The Office, Dark, Peaky Blinders,
+Narcos, The Mandalorian, Wednesday
+
+🍔 Comidas:
+Asado, Empanadas, Milanesa, Choripán, Pizza, Pasta,
+Hamburguesa, Tacos, Sushi, Paella, Ceviche, Arepas
+
+🎮 Videojuegos:
+Fortnite, Minecraft, Roblox, FIFA, GTA, Call of Duty,
+Valorant, League of Legends, Among Us, Rocket League,
+Fall Guys, Apex Legends
+
+
+¡DIVIÉRTETE! 🎭

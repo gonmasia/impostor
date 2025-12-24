@@ -1,0 +1,90 @@
+🎭 EL IMPOSTOR - Juego de Pistas y Deducción
+==============================================
+
+📱 CÓMO JUGAR EN TU CELULAR
+---------------------------
+
+OPCIÓN MÁS FÁCIL PARA PROBAR:
+1. Abre la carpeta "Impostor" en tu computadora
+2. Haz doble clic en "index.html"
+3. En tu navegador, presiona F12 o Ctrl+Shift+I
+4. Haz clic en el ícono de celular (arriba a la izquierda)
+5. ¡Juega desde ahí!
+
+PARA JUGAR EN TU CELULAR REAL:
+1. Envía los 3 archivos a tu celular:
+   - index.html
+   - styles.css
+   - game.js
+2. Descárgalos en la misma carpeta
+3. Abre "index.html" con Chrome o Safari
+4. ¡A jugar!
+
+🎮 CÓMO SE JUEGA
+----------------
+
+CONCEPTO:
+- Todos reciben una palabra secreta, EXCEPTO 1 impostor
+- Cada jugador da pistas sobre la palabra
+- El impostor debe fingir que conoce la palabra
+- El grupo vota para atrapar al impostor
+
+EJEMPLO:
+Palabra secreta: "PIZZA"
+
+Jugador 1: "Italiana" ✅
+Jugador 2: "Queso" ✅
+Jugador 3 (IMPOSTOR): "Popular" 🎭 (no sabe la palabra!)
+Jugador 4: "Redonda" ✅
+
+¿Quién es el impostor? ¡El Jugador 3 fue muy genérico!
+
+FLUJO:
+1. Cada jugador ve su palabra en SECRETO
+2. Juegan 2-4 rondas dando pistas
+3. Todos discuten quién es el impostor
+4. Votan para atraparlo
+5. Si atrapan al impostor: Grupo gana 1 punto
+6. Si no lo atrapan: Impostor gana 1 punto
+   (Y puede adivinar la palabra para +1 punto extra)
+
+⚙️ CONFIGURACIÓN
+----------------
+- Jugadores: 4-10 (recomendado: 6-8)
+- Rondas: 2-4 (recomendado: 3)
+- Categorías: Comida, Animales, Películas, y más!
+
+💡 TIPS RÁPIDOS
+---------------
+
+PARA JUGADORES NORMALES:
+✓ Da pistas específicas pero no obvias
+✓ Observa quién da pistas raras
+✓ Analiza TODAS las pistas antes de votar
+
+PARA EL IMPOSTOR:
+✓ Escucha la primera pista para saber el tema
+✓ Da pistas genéricas: "Popular", "Común", "Conocido"
+✓ Imita el estilo de otros jugadores
+✓ ¡No te delates!
+
+🎯 CATEGORÍAS INCLUIDAS
+-----------------------
+🍕 Comida        🐶 Animales     🎬 Películas
+⚽ Deportes      🌍 Lugares      👨‍⚕️ Profesiones
+📱 Objetos       🚗 Vehículos    🎄 Festividades
+🎵 Música        🌳 Naturaleza   💻 Tecnología
+
+Más de 250 palabras en total!
+
+¡DIVIÉRTETE! 🎉
+
+La gracia del juego está en:
+- Las discusiones y acusaciones
+- El impostor tratando de engañar
+- Descubrir quién miente
+- Adivinar la palabra si eres impostor
+
+---
+Inspirado en el juego de cartas "Impostor"
+Adaptado para jugar digitalmente
