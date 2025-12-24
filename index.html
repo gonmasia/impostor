@@ -118,6 +118,66 @@
         </div>
     </div>
 
+    <!-- Pantalla de Nueva Ronda -->
+    <div id="screen-new-round" class="screen">
+        <div class="container">
+            <h2>🔄 Nueva Ronda</h2>
+            <div id="roundInfo" class="round-info">
+                <p>Ronda <span id="nextRoundNumber">2</span></p>
+            </div>
+
+            <div class="config">
+                <h3 class="config-title">🎯 Configuración de la Ronda</h3>
+
+                <div class="config-group">
+                    <label>Número de impostores <span id="impostorSuggestionRound" class="suggestion-badge"></span></label>
+                    <div class="impostor-controls">
+                        <input type="number" id="impostorCountRound" min="1" value="1">
+                    </div>
+                    <span class="config-hint">Ajusta si quieres cambiar la cantidad</span>
+                </div>
+
+                <div class="config-group">
+                    <label>Temática</label>
+                    <select id="categoryRound" onchange="game.handleCategoryChangeRound()">
+                        <option value="comida">🍕 Comida</option>
+                        <option value="animales">🐶 Animales</option>
+                        <option value="peliculas">🎬 Películas</option>
+                        <option value="series">📺 Series</option>
+                        <option value="videojuegos">🎮 Videojuegos</option>
+                        <option value="deportes">⚽ Deportes</option>
+                        <option value="lugares">🌍 Lugares</option>
+                        <option value="profesiones">👨‍⚕️ Profesiones</option>
+                        <option value="objetos">📱 Objetos</option>
+                        <option value="vehiculos">🚗 Vehículos</option>
+                        <option value="festividades">🎄 Festividades</option>
+                        <option value="musica">🎵 Música</option>
+                        <option value="naturaleza">🌳 Naturaleza</option>
+                        <option value="tecnologia">💻 Tecnología</option>
+                        <option value="argentina">🇦🇷 Argentina</option>
+                        <option value="marcasargentinas">🏢 Marcas ARG</option>
+                        <option value="comidasargentinas">🍖 Comidas ARG</option>
+                        <option value="provincias">🗺️ Provincias ARG</option>
+                        <option value="aleatorio">🎲 Aleatorio</option>
+                        <option value="personalizada">✨ Personalizada</option>
+                    </select>
+                </div>
+
+                <div id="customWordsSectionRound" class="config-group" style="display: none;">
+                    <label>Escribe tus palabras personalizadas</label>
+                    <textarea id="customWordsRound" placeholder="Pizza, Hamburguesa, Tacos, Sushi, Pasta..." rows="4"></textarea>
+                    <span class="config-hint">Mínimo 10 palabras separadas por comas</span>
+                </div>
+            </div>
+
+            <button class="btn-primary btn-start" onclick="game.startNewRound()">
+                <span class="btn-text">COMENZAR RONDA</span>
+                <span class="btn-icon">→</span>
+            </button>
+            <button class="btn-secondary" onclick="game.backToFinal()">VOLVER</button>
+        </div>
+    </div>
+
     <!-- Pantalla de Asignación de Palabra -->
     <div id="screen-reveal" class="screen">
         <div class="container">

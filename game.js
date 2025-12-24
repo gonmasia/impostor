@@ -625,12 +625,79 @@ const game = {
     },
 
 
-    // Jugar de nuevo
+    // Jugar de nuevo - ir a configuración de nueva ronda
     playAgain() {
         this.playSound('click');
 
         // Incrementar contador de ronda
         this.currentRound++;
+
+        // Mostrar pantalla de configuración de nueva ronda
+        document.getElementById('nextRoundNumber').textContent = this.currentRound;
+
+        // Pre-llenar con la configuración anterior
+        document.getElementById('impostorCountRound').value = this.impostorCount;
+        document.getElementById('categoryRound').value = this.category;
+
+        // Actualizar sugerencia
+        const suggestionBadge = document.getElementById('impostorSuggestionRound');
+        const playerCount = this.players.length;
+        let suggested;
+        if (playerCount <= 5) {
+            suggested = 1;
+        } else if (playerCount <= 8) {
+            suggested = 2;
+        } else if (playerCount <= 12) {
+            suggested = 3;
+        } else {
+            suggested = Math.floor(playerCount * 0.25);
+        }
+        suggestionBadge.textContent = `Sugerido: ${suggested}`;
+
+        this.showScreen('screen-new-round');
+    },
+
+    // Handle category change in new round screen
+    handleCategoryChangeRound() {
+        const category = document.getElementById('categoryRound').value;
+        const customSection = document.getElementById('customWordsSectionRound');
+
+        if (category === 'personalizada') {
+            customSection.style.display = 'block';
+        } else {
+            customSection.style.display = 'none';
+        }
+
+        this.playSound('click');
+    },
+
+    // Iniciar nueva ronda con la configuración seleccionada
+    startNewRound() {
+        this.playSound('success');
+
+        // Obtener configuración de la nueva ronda
+        this.impostorCount = parseInt(document.getElementById('impostorCountRound').value);
+        this.category = document.getElementById('categoryRound').value;
+
+        if (this.category === 'personalizada') {
+            const customWordsText = document.getElementById('customWordsRound').value.trim();
+            if (!customWordsText) {
+                alert('Por favor ingresa palabras personalizadas');
+                return;
+            }
+            this.customWordsList = customWordsText.split(',').map(w => w.trim()).filter(w => w);
+            if (this.customWordsList.length < 10) {
+                alert('Necesitas al menos 10 palabras personalizadas');
+                return;
+            }
+        }
+
+        // Validar número de impostores
+        const maxImpostors = Math.floor(this.players.length / 2);
+        if (this.impostorCount > maxImpostors) {
+            alert(`El número máximo de impostores para ${this.players.length} jugadores es ${maxImpostors}`);
+            return;
+        }
 
         // Reiniciar con los mismos jugadores pero nueva palabra y nuevos impostores
         this.players.forEach(p => {

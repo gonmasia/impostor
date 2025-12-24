@@ -740,6 +740,23 @@ p {
     color: var(--text-color);
 }
 
+/* Round info */
+.round-info {
+    text-align: center;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 2px solid rgba(102, 126, 234, 0.3);
+}
+
+.round-info p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+    color: var(--text-color);
+}
+
 .warning {
     color: #f39c12;
     font-weight: bold;
