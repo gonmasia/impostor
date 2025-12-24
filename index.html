@@ -149,8 +149,20 @@
                 <p class="info" style="margin-top: 15px;">Den sus pistas en este orden</p>
             </div>
 
-            <button class="btn-primary" onclick="game.playAgain()">JUGAR NUEVA RONDA</button>
-            <button class="btn-secondary" onclick="game.shareGame()">📤 COMPARTIR</button>
+            <div id="winnerSection" class="winner-section" style="margin-top: 30px; display: none;">
+                <h3 style="text-align: center; margin-bottom: 15px;">¿Quién ganó?</h3>
+                <div style="display: flex; gap: 10px; flex-direction: column;">
+                    <button class="btn-winner btn-group" onclick="game.declareWinner('group')">
+                        👥 GANÓ EL GRUPO
+                    </button>
+                    <button class="btn-winner btn-impostor" onclick="game.declareWinner('impostor')">
+                        🎭 GANÓ EL IMPOSTOR
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-primary" onclick="game.toggleWinnerSection()">DECLARAR GANADOR</button>
+            <button class="btn-secondary" onclick="game.playAgain()">JUGAR NUEVA RONDA</button>
             <button class="btn-secondary" onclick="game.viewStats()">VER ESTADÍSTICAS</button>
             <button class="btn-secondary" onclick="game.endGame()">TERMINAR</button>
         </div>

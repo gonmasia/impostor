@@ -651,6 +651,29 @@ const game = {
         this.showScreen('screen-start');
     },
 
+    // Toggle winner section
+    toggleWinnerSection() {
+        const winnerSection = document.getElementById('winnerSection');
+        if (winnerSection.style.display === 'none') {
+            winnerSection.style.display = 'block';
+        } else {
+            winnerSection.style.display = 'none';
+        }
+        this.playSound('click');
+    },
+
+    // Declare winner and save game
+    declareWinner(winner) {
+        this.saveGameToHistory(winner);
+        this.playSound('success');
+
+        const winnerText = winner === 'impostor' ? '🎭 ¡Ganó el Impostor!' : '👥 ¡Ganó el Grupo!';
+        alert(winnerText + '\n\nPartida guardada en estadísticas.');
+
+        // Hide winner section after declaring
+        document.getElementById('winnerSection').style.display = 'none';
+    },
+
     // View statistics
     viewStats() {
         this.renderStats();
