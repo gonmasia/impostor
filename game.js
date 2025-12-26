@@ -466,29 +466,12 @@ const game = {
         this.updateRevealScreen();
     },
 
-    // Seleccionar jugador inicial de manera inteligente
+    // Seleccionar jugador inicial de manera completamente aleatoria
     selectStartingPlayer() {
-        // Crear lista de jugadores que NO son impostores
-        const nonImpostors = [];
-        this.players.forEach((player, index) => {
-            if (!player.isImpostor) {
-                nonImpostors.push(index);
-            }
-        });
-
-        // Estrategia: elegir a alguien del "medio" del grupo (entre 30% y 70% de la lista)
-        // Esto hace que los impostores tengan que escuchar varias pistas antes de hablar
-        const thirtyPercent = Math.floor(nonImpostors.length * 0.3);
-        const seventyPercent = Math.floor(nonImpostors.length * 0.7);
-
-        // Si el grupo es muy pequeño, usar todo el rango
-        const startRange = nonImpostors.length > 3 ? thirtyPercent : 0;
-        const endRange = nonImpostors.length > 3 ? seventyPercent : nonImpostors.length;
-
-        // Seleccionar aleatoriamente dentro del rango del medio
-        const middleRange = nonImpostors.slice(startRange, endRange);
-        const randomMiddleIdx = Math.floor(Math.random() * middleRange.length);
-        this.startingPlayerIndex = middleRange[randomMiddleIdx];
+        // Selección completamente aleatoria entre TODOS los jugadores
+        // Esto incluye tanto impostores como no-impostores
+        // Hace el juego más justo y desafiante
+        this.startingPlayerIndex = Math.floor(Math.random() * this.players.length);
 
         // Marcar quién empieza
         this.players[this.startingPlayerIndex].startsFirst = true;
