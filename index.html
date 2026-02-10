@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Impostor - Juego de Pistas</title>
     <meta name="description" content="Juego de pistas y deducción social para 4-10 jugadores">
     <meta name="theme-color" content="#667eea">
@@ -12,12 +12,12 @@
 </head>
 <body>
     <!-- Theme Toggle Button -->
-    <button class="theme-toggle" onclick="game.toggleTheme()" aria-label="Toggle theme">
+    <button class="theme-toggle" onclick="game.toggleTheme()" aria-label="Cambiar tema">
         <span id="themeIcon">🌙</span>
     </button>
 
     <!-- Sound Toggle Button -->
-    <button class="sound-toggle" onclick="game.toggleSound()" aria-label="Toggle sound">
+    <button class="sound-toggle" onclick="game.toggleSound()" aria-label="Activar o desactivar sonido">
         <span id="soundIcon">🔊</span>
     </button>
 
@@ -51,14 +51,14 @@
 
                 <div class="config-group">
                     <label>Número de jugadores</label>
-                    <input type="number" id="playerCount" min="4" value="6" oninput="game.updateImpostorSuggestion()">
-                    <span class="config-hint">Mínimo 4 jugadores</span>
+                    <input type="number" id="playerCount" min="4" max="20" value="6" inputmode="numeric" oninput="game.updateImpostorSuggestion()">
+                    <span class="config-hint">Mínimo 4, máximo 20 jugadores</span>
                 </div>
 
                 <div class="config-group">
                     <label>Número de impostores <span id="impostorSuggestion" class="suggestion-badge"></span></label>
                     <div class="impostor-controls">
-                        <input type="number" id="impostorCount" min="1" value="1">
+                        <input type="number" id="impostorCount" min="1" value="1" inputmode="numeric">
                     </div>
                     <span class="config-hint">Elige manualmente o sigue la sugerencia</span>
                 </div>
@@ -66,27 +66,37 @@
                 <div class="config-group">
                     <label>Temática</label>
                     <select id="category" onchange="game.handleCategoryChange()">
-                    <option value="comida">🍕 Comida</option>
-                    <option value="animales">🐶 Animales</option>
-                    <option value="peliculas">🎬 Películas</option>
-                    <option value="series">📺 Series</option>
-                    <option value="videojuegos">🎮 Videojuegos</option>
-                    <option value="deportes">⚽ Deportes</option>
-                    <option value="lugares">🌍 Lugares</option>
-                    <option value="profesiones">👨‍⚕️ Profesiones</option>
-                    <option value="objetos">📱 Objetos</option>
-                    <option value="vehiculos">🚗 Vehículos</option>
-                    <option value="festividades">🎄 Festividades</option>
-                    <option value="musica">🎵 Música</option>
-                    <option value="naturaleza">🌳 Naturaleza</option>
-                    <option value="tecnologia">💻 Tecnología</option>
-                    <option value="argentina">🇦🇷 Argentina</option>
-                    <option value="marcasargentinas">🏢 Marcas ARG</option>
-                    <option value="comidasargentinas">🍖 Comidas ARG</option>
-                    <option value="provincias">🗺️ Provincias ARG</option>
-                    <option value="aleatorio">🎲 Aleatorio</option>
-                    <option value="personalizada">✨ Personalizada</option>
-                </select>
+                        <optgroup label="Popular">
+                            <option value="comida">🍕 Comida</option>
+                            <option value="animales">🐶 Animales</option>
+                            <option value="peliculas">🎬 Películas</option>
+                            <option value="series">📺 Series</option>
+                            <option value="videojuegos">🎮 Videojuegos</option>
+                            <option value="deportes">⚽ Deportes</option>
+                        </optgroup>
+                        <optgroup label="Cultura">
+                            <option value="lugares">🌍 Lugares</option>
+                            <option value="profesiones">👨‍⚕️ Profesiones</option>
+                            <option value="musica">🎵 Música</option>
+                            <option value="naturaleza">🌳 Naturaleza</option>
+                            <option value="tecnologia">💻 Tecnología</option>
+                        </optgroup>
+                        <optgroup label="Objetos">
+                            <option value="objetos">📱 Objetos</option>
+                            <option value="vehiculos">🚗 Vehículos</option>
+                            <option value="festividades">🎄 Festividades</option>
+                        </optgroup>
+                        <optgroup label="Argentina">
+                            <option value="argentina">🇦🇷 Argentina</option>
+                            <option value="marcasargentinas">🏢 Marcas ARG</option>
+                            <option value="comidasargentinas">🍖 Comidas ARG</option>
+                            <option value="provincias">🗺️ Provincias ARG</option>
+                        </optgroup>
+                        <optgroup label="Especial">
+                            <option value="aleatorio">🎲 Aleatorio</option>
+                            <option value="personalizada">✨ Personalizada</option>
+                        </optgroup>
+                    </select>
                 </div>
 
                 <div id="customWordsSection" class="config-group" style="display: none;">
@@ -132,7 +142,7 @@
                 <div class="config-group">
                     <label>Número de impostores <span id="impostorSuggestionRound" class="suggestion-badge"></span></label>
                     <div class="impostor-controls">
-                        <input type="number" id="impostorCountRound" min="1" value="1">
+                        <input type="number" id="impostorCountRound" min="1" value="1" inputmode="numeric">
                     </div>
                     <span class="config-hint">Ajusta si quieres cambiar la cantidad</span>
                 </div>
@@ -140,26 +150,36 @@
                 <div class="config-group">
                     <label>Temática</label>
                     <select id="categoryRound" onchange="game.handleCategoryChangeRound()">
-                        <option value="comida">🍕 Comida</option>
-                        <option value="animales">🐶 Animales</option>
-                        <option value="peliculas">🎬 Películas</option>
-                        <option value="series">📺 Series</option>
-                        <option value="videojuegos">🎮 Videojuegos</option>
-                        <option value="deportes">⚽ Deportes</option>
-                        <option value="lugares">🌍 Lugares</option>
-                        <option value="profesiones">👨‍⚕️ Profesiones</option>
-                        <option value="objetos">📱 Objetos</option>
-                        <option value="vehiculos">🚗 Vehículos</option>
-                        <option value="festividades">🎄 Festividades</option>
-                        <option value="musica">🎵 Música</option>
-                        <option value="naturaleza">🌳 Naturaleza</option>
-                        <option value="tecnologia">💻 Tecnología</option>
-                        <option value="argentina">🇦🇷 Argentina</option>
-                        <option value="marcasargentinas">🏢 Marcas ARG</option>
-                        <option value="comidasargentinas">🍖 Comidas ARG</option>
-                        <option value="provincias">🗺️ Provincias ARG</option>
-                        <option value="aleatorio">🎲 Aleatorio</option>
-                        <option value="personalizada">✨ Personalizada</option>
+                        <optgroup label="Popular">
+                            <option value="comida">🍕 Comida</option>
+                            <option value="animales">🐶 Animales</option>
+                            <option value="peliculas">🎬 Películas</option>
+                            <option value="series">📺 Series</option>
+                            <option value="videojuegos">🎮 Videojuegos</option>
+                            <option value="deportes">⚽ Deportes</option>
+                        </optgroup>
+                        <optgroup label="Cultura">
+                            <option value="lugares">🌍 Lugares</option>
+                            <option value="profesiones">👨‍⚕️ Profesiones</option>
+                            <option value="musica">🎵 Música</option>
+                            <option value="naturaleza">🌳 Naturaleza</option>
+                            <option value="tecnologia">💻 Tecnología</option>
+                        </optgroup>
+                        <optgroup label="Objetos">
+                            <option value="objetos">📱 Objetos</option>
+                            <option value="vehiculos">🚗 Vehículos</option>
+                            <option value="festividades">🎄 Festividades</option>
+                        </optgroup>
+                        <optgroup label="Argentina">
+                            <option value="argentina">🇦🇷 Argentina</option>
+                            <option value="marcasargentinas">🏢 Marcas ARG</option>
+                            <option value="comidasargentinas">🍖 Comidas ARG</option>
+                            <option value="provincias">🗺️ Provincias ARG</option>
+                        </optgroup>
+                        <optgroup label="Especial">
+                            <option value="aleatorio">🎲 Aleatorio</option>
+                            <option value="personalizada">✨ Personalizada</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -181,6 +201,13 @@
     <!-- Pantalla de Asignación de Palabra -->
     <div id="screen-reveal" class="screen">
         <div class="container">
+            <span id="revealRoundContext" class="reveal-round-badge" style="display: none;"></span>
+            <div class="reveal-progress-section">
+                <span id="revealProgress" class="reveal-progress-text"></span>
+                <div class="reveal-progress-track">
+                    <div id="revealProgressBar" class="reveal-progress-bar"></div>
+                </div>
+            </div>
             <h2><span id="currentPlayerName"></span></h2>
             <p class="warning">⚠️ No dejes que otros vean tu palabra</p>
             <button class="btn-primary" onclick="game.revealWord()">VER MI PALABRA</button>
@@ -213,7 +240,7 @@
                 <p class="info" style="margin-top: 15px;">Den sus pistas en este orden</p>
             </div>
 
-            <div id="winnerSection" class="winner-section" style="margin-top: 30px; display: none;">
+            <div id="winnerSection" class="winner-section">
                 <h3 style="text-align: center; margin-bottom: 15px;">¿Quién ganó?</h3>
                 <div style="display: flex; gap: 10px; flex-direction: column;">
                     <button class="btn-winner btn-group" onclick="game.declareWinner('group')">
@@ -228,7 +255,7 @@
             <button class="btn-primary" onclick="game.toggleWinnerSection()">DECLARAR GANADOR</button>
             <button class="btn-secondary" onclick="game.playAgain()">JUGAR NUEVA RONDA</button>
             <button class="btn-secondary" onclick="game.viewStats()">VER ESTADÍSTICAS</button>
-            <button class="btn-secondary" onclick="game.endGame()">TERMINAR</button>
+            <button class="btn-secondary btn-danger" onclick="game.endGame()">TERMINAR</button>
         </div>
     </div>
 
@@ -238,9 +265,9 @@
             <h2>📊 ESTADÍSTICAS</h2>
 
             <div class="stats-tabs">
-                <button class="stats-tab active" onclick="game.showStatsTab('session')">Sesión Actual</button>
-                <button class="stats-tab" onclick="game.showStatsTab('history')">Historial</button>
-                <button class="stats-tab" onclick="game.showStatsTab('players')">Jugadores</button>
+                <button class="stats-tab active" onclick="game.showStatsTab('session', event)">Sesión Actual</button>
+                <button class="stats-tab" onclick="game.showStatsTab('history', event)">Historial</button>
+                <button class="stats-tab" onclick="game.showStatsTab('players', event)">Jugadores</button>
             </div>
 
             <div id="stats-session" class="stats-content active">
@@ -264,6 +291,9 @@
             <button class="btn-secondary" onclick="game.backToFinal()">VOLVER</button>
         </div>
     </div>
+
+    <!-- Overlay para modales y celebraciones -->
+    <div id="gameOverlay" class="game-overlay" style="display: none;"></div>
 
     <script src="game.js"></script>
     <script>

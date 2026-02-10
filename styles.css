@@ -2,6 +2,7 @@
     --bg-gradient-start: #1a1a2e;
     --bg-gradient-end: #16213e;
     --text-color: #fff;
+    --text-secondary: rgba(255,255,255,0.7);
     --card-bg: rgba(255,255,255,0.1);
     --card-bg-hover: rgba(255,255,255,0.15);
     --input-bg: rgba(255,255,255,0.9);
@@ -9,12 +10,19 @@
     --border-color: rgba(255,255,255,0.3);
     --accent-color: #667eea;
     --accent-secondary: #764ba2;
+    --btn-secondary-text: #fff;
+    --btn-secondary-bg: rgba(255,255,255,0.1);
+    --btn-secondary-border: rgba(255,255,255,0.3);
+    --instructions-bg: rgba(0,0,0,0.2);
+    --instructions-text: rgba(255,255,255,0.95);
+    --warning-color: #f39c12;
 }
 
 body.light-mode {
     --bg-gradient-start: #f0f4f8;
     --bg-gradient-end: #d9e2ec;
     --text-color: #1a1a2e;
+    --text-secondary: rgba(26,26,46,0.6);
     --card-bg: rgba(0,0,0,0.05);
     --card-bg-hover: rgba(0,0,0,0.1);
     --input-bg: #fff;
@@ -22,6 +30,12 @@ body.light-mode {
     --border-color: rgba(0,0,0,0.2);
     --accent-color: #667eea;
     --accent-secondary: #764ba2;
+    --btn-secondary-text: #1a1a2e;
+    --btn-secondary-bg: rgba(0,0,0,0.06);
+    --btn-secondary-border: rgba(0,0,0,0.25);
+    --instructions-bg: rgba(0,0,0,0.06);
+    --instructions-text: #1a1a2e;
+    --warning-color: #d68910;
 }
 
 * {
@@ -40,6 +54,8 @@ body {
     touch-action: manipulation;
     transition: background 0.3s ease, color 0.3s ease;
 }
+
+/* ========== Toggle Buttons ========== */
 
 .theme-toggle {
     position: fixed;
@@ -95,6 +111,8 @@ body {
     transform: scale(0.95);
 }
 
+/* ========== Screens ========== */
+
 .screen {
     display: none;
     min-height: 100vh;
@@ -108,10 +126,10 @@ body {
 .screen.active {
     display: flex;
     flex-direction: column;
-    animation: fadeIn 0.4s ease-in forwards;
+    animation: screenFadeIn 0.4s ease-in forwards;
 }
 
-@keyframes fadeIn {
+@keyframes screenFadeIn {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -140,45 +158,12 @@ body {
     text-align: center;
 }
 
-/* Game Title Styling */
+/* ========== Game Title ========== */
+
 .game-title-wrapper {
     position: relative;
     padding: 40px 20px;
     margin-bottom: 20px;
-}
-
-.mask-icons {
-    display: flex;
-    justify-content: center;
-    gap: 100px;
-    margin-bottom: 20px;
-    position: relative;
-}
-
-.mask-left, .mask-right {
-    font-size: 4rem;
-    animation: floatMask 3s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.6));
-}
-
-.mask-left {
-    animation-delay: 0s;
-}
-
-.mask-right {
-    animation-delay: 1.5s;
-}
-
-@keyframes floatMask {
-    0%, 100% {
-        transform: translateY(0) rotate(0deg);
-    }
-    25% {
-        transform: translateY(-15px) rotate(-5deg);
-    }
-    75% {
-        transform: translateY(-10px) rotate(5deg);
-    }
 }
 
 .game-title {
@@ -247,6 +232,8 @@ body {
     }
 }
 
+/* ========== Typography ========== */
+
 h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
@@ -275,6 +262,8 @@ p {
     line-height: 1.5;
 }
 
+/* ========== Config Section ========== */
+
 .config {
     background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
     padding: 30px;
@@ -296,14 +285,13 @@ p {
 }
 
 .config label {
-    display: block;
+    display: flex;
     margin: 20px 0 10px;
     font-size: 1rem;
     text-align: left;
     font-weight: 600;
     color: var(--text-color);
     letter-spacing: 0.5px;
-    display: flex;
     align-items: center;
     gap: 8px;
 }
@@ -312,11 +300,6 @@ p {
     content: '●';
     color: var(--accent-color);
     font-size: 0.8rem;
-}
-
-.config-input-wrapper {
-    position: relative;
-    margin-bottom: 10px;
 }
 
 .config input,
@@ -397,8 +380,7 @@ p {
 .config-hint {
     display: block;
     font-size: 0.85rem;
-    color: var(--text-color);
-    opacity: 0.6;
+    color: var(--text-secondary);
     margin-top: 6px;
     font-style: italic;
 }
@@ -451,15 +433,17 @@ p {
     box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
 }
 
-#customWordsSection {
+#customWordsSection,
+#customWordsSectionRound {
     margin-top: 15px;
     padding-top: 15px;
-    border-top: 1px solid rgba(255,255,255,0.2);
+    border-top: 1px solid var(--border-color);
 }
 
-/* Sección de instrucciones */
+/* ========== Instructions ========== */
+
 .instructions-section {
-    background: rgba(255,255,255,0.08);
+    background: var(--card-bg);
     padding: 15px;
     border-radius: 12px;
     margin: 20px 0 30px;
@@ -498,7 +482,7 @@ p {
 
 .instructions-content {
     text-align: left;
-    background: rgba(0,0,0,0.2);
+    background: var(--instructions-bg);
     padding: 15px;
     border-radius: 8px;
     margin-top: 10px;
@@ -524,7 +508,7 @@ p {
     margin: 12px 0;
     line-height: 1.6;
     font-size: 0.95rem;
-    color: rgba(255,255,255,0.95);
+    color: var(--instructions-text);
 }
 
 .instructions-content li strong {
@@ -532,9 +516,10 @@ p {
     font-weight: 600;
 }
 
-/* Inputs de nombres */
+/* ========== Name Inputs ========== */
+
 .name-inputs {
-    background: rgba(255,255,255,0.05);
+    background: var(--card-bg);
     padding: 20px;
     border-radius: 12px;
     margin: 20px 0;
@@ -551,7 +536,7 @@ p {
     margin-bottom: 8px;
     font-size: 1rem;
     text-align: left;
-    color: #3498db;
+    color: var(--accent-color);
     font-weight: bold;
 }
 
@@ -559,19 +544,21 @@ p {
     width: 100%;
     padding: 12px;
     font-size: 1.1rem;
-    border: 2px solid rgba(52, 152, 219, 0.3);
+    border: 2px solid rgba(102, 126, 234, 0.3);
     border-radius: 8px;
-    background: rgba(255,255,255,0.9);
-    color: #333;
+    background: var(--input-bg);
+    color: var(--input-text);
     transition: all 0.2s;
 }
 
 .name-input-group input:focus {
     outline: none;
-    border-color: #3498db;
-    background: rgba(255,255,255,1);
-    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+    border-color: var(--accent-color);
+    background: var(--input-bg);
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
 }
+
+/* ========== Buttons ========== */
 
 .btn-primary {
     width: 100%;
@@ -653,9 +640,9 @@ p {
     width: 100%;
     padding: 12px 30px;
     font-size: 1rem;
-    background: rgba(255,255,255,0.1);
-    color: white;
-    border: 2px solid rgba(255,255,255,0.3);
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+    border: 2px solid var(--btn-secondary-border);
     border-radius: 12px;
     cursor: pointer;
     margin: 10px 0;
@@ -663,10 +650,22 @@ p {
 }
 
 .btn-secondary:active {
-    background: rgba(255,255,255,0.2);
+    background: var(--card-bg-hover);
 }
 
-/* Winner buttons */
+.btn-danger {
+    border-color: rgba(231, 76, 60, 0.5);
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+}
+
+.btn-danger:hover {
+    background: rgba(231, 76, 60, 0.2);
+    border-color: #e74c3c;
+}
+
+/* ========== Winner Buttons ========== */
+
 .btn-winner {
     width: 100%;
     padding: 15px 30px;
@@ -701,26 +700,30 @@ p {
     box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
 }
 
+/* ========== Winner Section (toggle visibility) ========== */
+
 .winner-section {
     background: rgba(255,255,255,0.05);
     padding: 20px;
     border-radius: 15px;
     border: 2px solid rgba(255,255,255,0.1);
-    animation: fadeIn 0.3s ease-out;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0 20px;
+    margin: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.winner-section.winner-visible {
+    max-height: 300px;
+    opacity: 1;
+    padding: 20px;
+    margin: 15px 0;
 }
 
-/* Session info */
+/* ========== Session Info ========== */
+
 .session-info {
     display: flex;
     justify-content: center;
@@ -733,14 +736,14 @@ p {
     margin: 15px 0;
     font-weight: 600;
     font-size: 0.95rem;
-    animation: fadeIn 0.3s ease-out;
 }
 
 .session-info span {
     color: var(--text-color);
 }
 
-/* Round info */
+/* ========== Round Info ========== */
+
 .round-info {
     text-align: center;
     padding: 15px;
@@ -757,18 +760,102 @@ p {
     color: var(--text-color);
 }
 
+/* ========== Reveal Screen: Progress Bar ========== */
+
+.reveal-progress-section {
+    margin-bottom: 25px;
+}
+
+.reveal-progress-text {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.reveal-progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--card-bg);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.reveal-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), var(--accent-secondary));
+    border-radius: 3px;
+    transition: width 0.4s ease;
+    width: 0%;
+}
+
+.reveal-round-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* ========== Suspense Reveal Animation ========== */
+
+.suspense-reveal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 30px;
+}
+
+.suspense-dots {
+    display: flex;
+    gap: 12px;
+}
+
+.suspense-dots span {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--accent-color);
+    animation: dotBounce 0.6s ease-in-out infinite;
+}
+
+.suspense-dots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.suspense-dots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes dotBounce {
+    0%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+    50% {
+        transform: translateY(-15px);
+        opacity: 1;
+    }
+}
+
+/* ========== Warning & Info ========== */
+
 .warning {
-    color: #f39c12;
+    color: var(--warning-color);
     font-weight: bold;
     font-size: 1.1rem;
 }
 
 .info {
-    color: #3498db;
+    color: var(--accent-color);
     font-size: 0.95rem;
 }
 
-/* Tarjetas de palabra */
+/* ========== Word Cards ========== */
+
 .word-card {
     padding: 40px 30px;
     border-radius: 15px;
@@ -828,7 +915,8 @@ p {
     line-height: 1.4;
 }
 
-/* Recordatorios */
+/* ========== Word Reminder ========== */
+
 .word-reminder {
     margin-bottom: 20px;
 }
@@ -850,228 +938,8 @@ p {
     border: 2px solid #e74c3c;
 }
 
-/* Input de pista */
-.clue-input {
-    margin: 25px 0;
-}
+/* ========== Play Order ========== */
 
-.clue-input label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 1rem;
-}
-
-.clue-input input {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.1rem;
-    border: none;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.9);
-    color: #333;
-    text-align: center;
-}
-
-/* Lista de pistas */
-.clues-list {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 12px;
-    margin: 20px 0;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.clue-item {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 8px;
-    margin: 10px 0;
-    text-align: left;
-}
-
-.clue-item strong {
-    color: #3498db;
-}
-
-/* Todas las pistas */
-.all-clues {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 12px;
-    margin: 20px 0;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.player-clues {
-    margin: 15px 0;
-    text-align: left;
-}
-
-.player-clues strong {
-    color: #3498db;
-    font-size: 1.05rem;
-}
-
-.clues-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.clue-tag {
-    background: rgba(255,255,255,0.15);
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-/* Opciones de voto */
-.vote-options {
-    margin: 20px 0;
-}
-
-.vote-option {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 10px;
-    margin: 10px 0;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.vote-option:hover {
-    background: rgba(255,255,255,0.15);
-}
-
-.vote-option input[type="radio"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-}
-
-.vote-option label {
-    flex: 1;
-    cursor: pointer;
-    font-size: 1.1rem;
-    text-align: left;
-}
-
-.vote-option:has(input:checked) {
-    border-color: #3498db;
-    background: rgba(52, 152, 219, 0.3);
-}
-
-/* Tarjetas de resultado */
-.result-card {
-    padding: 40px 30px;
-    border-radius: 15px;
-    margin: 20px 0;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-}
-
-.result-card.success {
-    background: linear-gradient(135deg, #27ae60, #229954);
-}
-
-.result-card.failure {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-}
-
-.result-card.impostor-win {
-    background: linear-gradient(135deg, #8e44ad, #6c3483);
-}
-
-.result-card.neutral {
-    background: linear-gradient(135deg, #34495e, #2c3e50);
-}
-
-.result-card h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-}
-
-.result-card h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-}
-
-.result-card p {
-    font-size: 1.1rem;
-    margin: 10px 0;
-}
-
-.word-reveal {
-    background: rgba(0,0,0,0.2);
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    font-size: 1.2rem;
-}
-
-.bonus {
-    background: rgba(255,255,255,0.2);
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 15px;
-    font-size: 1.5rem;
-    font-weight: bold;
-    animation: pulse 1s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
-/* Puntuación */
-.score-display {
-    margin: 30px 0;
-}
-
-.final-reveal {
-    background: rgba(231, 76, 60, 0.2);
-    border: 2px solid #e74c3c;
-    padding: 20px;
-    border-radius: 12px;
-    margin-bottom: 30px;
-}
-
-.final-reveal h3 {
-    color: #e74c3c;
-    margin-bottom: 15px;
-}
-
-.impostor-reveal {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #e74c3c;
-    padding: 15px;
-    background: rgba(0,0,0,0.2);
-    border-radius: 10px;
-}
-
-/* Pantalla final */
-.final-info {
-    background: rgba(52, 152, 219, 0.2);
-    border: 2px solid #3498db;
-    padding: 25px;
-    border-radius: 12px;
-    margin: 30px 0;
-}
-
-/* Orden de juego */
 .play-order-section {
     background: rgba(102, 126, 234, 0.2);
     border: 2px solid #667eea;
@@ -1128,72 +996,8 @@ p {
     font-weight: 500;
 }
 
-.final-info h3 {
-    color: #3498db;
-    margin-bottom: 15px;
-}
+/* ========== Statistics ========== */
 
-.secret-word-reveal {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #3498db;
-    padding: 20px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    margin: 15px 0;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.score-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.score-card {
-    background: rgba(255,255,255,0.1);
-    padding: 30px 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.score-card.group {
-    border: 3px solid #3498db;
-}
-
-.score-card.impostor {
-    border: 3px solid #e74c3c;
-}
-
-.score-card h3 {
-    margin-bottom: 15px;
-    font-size: 1.2rem;
-}
-
-.score-number {
-    font-size: 4rem;
-    font-weight: bold;
-    margin: 15px 0;
-}
-
-.score-card.group .score-number {
-    color: #3498db;
-}
-
-.score-card.impostor .score-number {
-    color: #e74c3c;
-}
-
-.score-info {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-}
-
-/* Statistics Screen */
 .stats-tabs {
     display: flex;
     gap: 10px;
@@ -1225,7 +1029,7 @@ p {
 
 .stats-content.active {
     display: block;
-    animation: fadeIn 0.4s ease-in;
+    animation: screenFadeIn 0.4s ease-in;
 }
 
 .history-list,
@@ -1238,7 +1042,6 @@ p {
     margin: 20px 0;
 }
 
-/* Session rounds styles */
 .session-rounds-list {
     background: var(--card-bg);
     border-radius: 12px;
@@ -1393,7 +1196,259 @@ p {
     margin-top: 5px;
 }
 
-/* Responsive */
+/* ========== Toast Notifications ========== */
+
+.game-toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.game-toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-success {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: #fff;
+}
+
+.toast-error {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+}
+
+.toast-info {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+}
+
+.toast-warning {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: #fff;
+}
+
+/* ========== Game Overlay (Modal + Celebration) ========== */
+
+.game-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.game-overlay.visible {
+    opacity: 1;
+}
+
+/* ========== Modal ========== */
+
+.modal-box {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 2px solid rgba(102, 126, 234, 0.4);
+    border-radius: 20px;
+    padding: 35px 30px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    animation: scaleIn 0.3s ease-out;
+    color: #fff;
+}
+
+.modal-box h3 {
+    font-size: 1.4rem;
+    margin-bottom: 15px;
+}
+
+.modal-box p {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 10px;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-modal {
+    padding: 14px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid rgba(102, 126, 234, 0.4);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    color: #fff;
+}
+
+.btn-modal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-modal:active {
+    transform: scale(0.97);
+}
+
+.btn-modal-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-color: rgba(231, 76, 60, 0.5);
+}
+
+.btn-modal-danger:hover {
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+}
+
+.btn-modal-cancel {
+    background: transparent;
+    border-color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.8);
+}
+
+.btn-modal-cancel:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* ========== End Summary (inside modal) ========== */
+
+.end-summary {
+    text-align: left;
+    margin: 15px 0;
+}
+
+.end-summary-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.end-stat {
+    background: rgba(255,255,255,0.1);
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.end-stat strong {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin-bottom: 4px;
+}
+
+.end-stat span {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* ========== Celebration Overlay ========== */
+
+.celebration-box {
+    border-radius: 20px;
+    padding: 40px 30px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    animation: celebrationPop 0.5s ease-out;
+}
+
+.celebration-group {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: #fff;
+    box-shadow: 0 10px 40px rgba(39, 174, 96, 0.5);
+}
+
+.celebration-impostor {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+    box-shadow: 0 10px 40px rgba(231, 76, 60, 0.5);
+}
+
+.celebration-icon {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    animation: celebrationBounce 0.6s ease-in-out infinite alternate;
+}
+
+.celebration-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.celebration-round {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-bottom: 25px;
+}
+
+.btn-celebration {
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-celebration:hover {
+    background: rgba(255,255,255,0.35);
+    transform: translateY(-2px);
+}
+
+.btn-celebration:active {
+    transform: scale(0.97);
+}
+
+@keyframes celebrationPop {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes celebrationBounce {
+    from {
+        transform: translateY(0) scale(1);
+    }
+    to {
+        transform: translateY(-10px) scale(1.1);
+    }
+}
+
+/* ========== Responsive ========== */
+
 @media (max-width: 400px) {
     .game-title {
         font-size: 2rem;
@@ -1403,14 +1458,6 @@ p {
     .game-title::before {
         content: 'EL IMPOSTOR';
         filter: blur(10px);
-    }
-
-    .mask-icons {
-        gap: 50px;
-    }
-
-    .mask-left, .mask-right {
-        font-size: 2.5rem;
     }
 
     .game-subtitle {
@@ -1430,38 +1477,47 @@ p {
         font-size: 2rem;
     }
 
-    .score-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .score-number {
+    .celebration-icon {
         font-size: 3rem;
     }
 
-    .result-card h1 {
-        font-size: 2rem;
+    .celebration-title {
+        font-size: 1.3rem;
     }
 }
 
-/* Scrollbar personalizado */
-.clues-list::-webkit-scrollbar,
-.all-clues::-webkit-scrollbar {
+/* ========== Custom Scrollbar ========== */
+
+.play-order-list::-webkit-scrollbar,
+.name-inputs::-webkit-scrollbar,
+.history-list::-webkit-scrollbar,
+.player-stats-list::-webkit-scrollbar,
+.session-rounds-list::-webkit-scrollbar {
     width: 8px;
 }
 
-.clues-list::-webkit-scrollbar-track,
-.all-clues::-webkit-scrollbar-track {
+.play-order-list::-webkit-scrollbar-track,
+.name-inputs::-webkit-scrollbar-track,
+.history-list::-webkit-scrollbar-track,
+.player-stats-list::-webkit-scrollbar-track,
+.session-rounds-list::-webkit-scrollbar-track {
     background: rgba(255,255,255,0.1);
     border-radius: 10px;
 }
 
-.clues-list::-webkit-scrollbar-thumb,
-.all-clues::-webkit-scrollbar-thumb {
+.play-order-list::-webkit-scrollbar-thumb,
+.name-inputs::-webkit-scrollbar-thumb,
+.history-list::-webkit-scrollbar-thumb,
+.player-stats-list::-webkit-scrollbar-thumb,
+.session-rounds-list::-webkit-scrollbar-thumb {
     background: rgba(255,255,255,0.3);
     border-radius: 10px;
 }
 
-.clues-list::-webkit-scrollbar-thumb:hover,
-.all-clues::-webkit-scrollbar-thumb:hover {
+.play-order-list::-webkit-scrollbar-thumb:hover,
+.name-inputs::-webkit-scrollbar-thumb:hover,
+.history-list::-webkit-scrollbar-thumb:hover,
+.player-stats-list::-webkit-scrollbar-thumb:hover,
+.session-rounds-list::-webkit-scrollbar-thumb:hover {
     background: rgba(255,255,255,0.5);
 }
