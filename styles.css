@@ -722,6 +722,134 @@ p {
     margin: 15px 0;
 }
 
+/* ========== Round Result (ronda cerrada) ========== */
+
+.round-result {
+    text-align: center;
+    padding: 15px 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25), rgba(118, 75, 162, 0.25));
+    border: 2px solid rgba(102, 126, 234, 0.4);
+    color: var(--text-color);
+}
+
+/* ========== Scoreboard (puntaje de sesión) ========== */
+
+.scoreboard {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 215, 0, 0.35);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: left;
+}
+
+.scoreboard h3 {
+    text-align: center;
+    margin-bottom: 12px;
+    font-size: 1.15rem;
+    color: var(--text-color);
+}
+
+.scoreboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.scoreboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+}
+
+.scoreboard-item.leader {
+    background: rgba(255, 215, 0, 0.15);
+    border: 1px solid rgba(255, 215, 0, 0.5);
+}
+
+.scoreboard-name {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.scoreboard-points {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    min-width: 28px;
+    text-align: center;
+}
+
+/* ========== Player Editor (entre rondas) ========== */
+
+.player-edit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.player-edit-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+}
+
+.btn-remove-player {
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid rgba(231, 76, 60, 0.5);
+    color: #e74c3c;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+}
+
+.btn-remove-player:hover {
+    background: rgba(231, 76, 60, 0.4);
+}
+
+.add-player-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.add-player-row input {
+    flex: 1;
+}
+
+.btn-add-player {
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-secondary));
+    border: none;
+    color: #fff;
+    width: 48px;
+    border-radius: 10px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.15s ease;
+}
+
+.btn-add-player:active {
+    transform: scale(0.95);
+}
+
 /* ========== Session Info ========== */
 
 .session-info {
@@ -801,44 +929,69 @@ p {
     margin-bottom: 15px;
 }
 
-/* ========== Suspense Reveal Animation ========== */
+/* ========== Hold-to-Reveal ========== */
 
-.suspense-reveal {
+.hold-hint {
+    font-size: 1.05rem;
+    margin-bottom: 15px;
+    color: var(--text-color);
+}
+
+.hold-area {
+    min-height: 320px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    padding: 60px 30px;
+    justify-content: center;
+    border: 3px dashed rgba(102, 126, 234, 0.5);
+    border-radius: 15px;
+    margin: 10px 0;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
 }
 
-.suspense-dots {
+.hold-area:active {
+    border-color: var(--accent-color);
+    background: rgba(102, 126, 234, 0.08);
+}
+
+.hold-placeholder {
     display: flex;
-    gap: 12px;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1.6;
 }
 
-.suspense-dots span {
+.hold-lock {
     font-size: 3rem;
-    font-weight: bold;
-    color: var(--accent-color);
-    animation: dotBounce 0.6s ease-in-out infinite;
 }
 
-.suspense-dots span:nth-child(2) {
-    animation-delay: 0.15s;
+.hold-card {
+    width: 100%;
+    pointer-events: none;
 }
 
-.suspense-dots span:nth-child(3) {
-    animation-delay: 0.3s;
+.hold-card .word-card {
+    margin: 0;
 }
 
-@keyframes dotBounce {
-    0%, 100% {
-        transform: translateY(0);
-        opacity: 0.4;
-    }
-    50% {
-        transform: translateY(-15px);
-        opacity: 1;
-    }
+.hold-warning {
+    font-size: 0.95rem;
+    margin-top: 10px;
+}
+
+.btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* ========== Warning & Info ========== */
@@ -873,10 +1026,6 @@ p {
         transform: scale(1);
         opacity: 1;
     }
-}
-
-.word-card.impostor {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
 }
 
 .word-card.crewmate {

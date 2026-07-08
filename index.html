@@ -137,6 +137,16 @@
             </div>
 
             <div class="config">
+                <h3 class="config-title">👥 Jugadores (<span id="playerEditCount"></span>)</h3>
+                <div id="playerEditList" class="player-edit-list"></div>
+                <div class="add-player-row">
+                    <input type="text" id="newPlayerName" placeholder="Nombre del nuevo jugador" maxlength="20">
+                    <button class="btn-add-player" onclick="game.addPlayer()" aria-label="Agregar jugador">＋</button>
+                </div>
+                <span class="config-hint">Podés sumar o quitar jugadores para la próxima ronda</span>
+            </div>
+
+            <div class="config">
                 <h3 class="config-title">🎯 Configuración de la Ronda</h3>
 
                 <div class="config-group">
@@ -218,7 +228,7 @@
     <div id="screen-word" class="screen">
         <div class="container">
             <div id="wordDisplay"></div>
-            <button class="btn-primary" onclick="game.nextPlayer()">SIGUIENTE JUGADOR</button>
+            <button class="btn-primary" id="nextPlayerBtn" onclick="game.nextPlayer()">SIGUIENTE JUGADOR</button>
         </div>
     </div>
 
@@ -240,6 +250,10 @@
                 <p class="info" style="margin-top: 15px;">Den sus pistas en este orden</p>
             </div>
 
+            <div id="scoreboard" class="scoreboard" style="display: none;"></div>
+
+            <div id="roundResult" class="round-result" style="display: none;"></div>
+
             <div id="winnerSection" class="winner-section">
                 <h3 style="text-align: center; margin-bottom: 15px;">¿Quién ganó?</h3>
                 <div style="display: flex; gap: 10px; flex-direction: column;">
@@ -252,7 +266,7 @@
                 </div>
             </div>
 
-            <button class="btn-primary" onclick="game.toggleWinnerSection()">DECLARAR GANADOR</button>
+            <button class="btn-primary" id="declareWinnerBtn" onclick="game.toggleWinnerSection()">DECLARAR GANADOR</button>
             <button class="btn-secondary" onclick="game.playAgain()">JUGAR NUEVA RONDA</button>
             <button class="btn-secondary" onclick="game.viewStats()">VER ESTADÍSTICAS</button>
             <button class="btn-secondary btn-danger" onclick="game.endGame()">TERMINAR</button>

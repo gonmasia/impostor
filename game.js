@@ -103,28 +103,24 @@ const game = {
     impostorIndexes: [],
     impostorCount: 1,
     recentImpostors: [],
+    previousImpostors: [],
     secretWord: '',
     category: '',
-    totalRounds: 3,
     currentRound: 0,
     currentPlayerIndex: 0,
-    roundClues: [],
-    allClues: [],
-    votes: {},
-    groupScore: 0,
-    impostorScore: 0,
+    roundClosed: false,
     usedWords: [],
     customWordsList: [],
+    editablePlayers: [],
     darkMode: false,
-    gameHistory: [],
-    playerStats: {},
     soundEnabled: true,
     _audioContext: null,
+    _wordSoundPlayed: false,
 
     // Session management
     sessionActive: false,
     sessionRounds: [],
-    sessionStartTime: null,
+    sessionScores: {},
 
     // Shared AudioContext (fix memory leak - one instance reused)
     getAudioContext() {
@@ -163,15 +159,6 @@ const game = {
                     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
                     oscillator.start(audioContext.currentTime);
                     oscillator.stop(audioContext.currentTime + 0.3);
-                    break;
-                case 'impostor':
-                    oscillator.type = 'sawtooth';
-                    oscillator.frequency.value = 200;
-                    gainNode.gain.setValueAtTime(0.12, audioContext.currentTime);
-                    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.5);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.6);
                     break;
                 case 'success':
                     oscillator.frequency.value = 523.25;
@@ -391,6 +378,13 @@ const game = {
 
     // --- Impostor suggestion ---
 
+    suggestedImpostorCount(playerCount) {
+        if (playerCount <= 5) return 1;
+        if (playerCount <= 8) return 2;
+        if (playerCount <= 12) return 3;
+        return Math.floor(playerCount * 0.25);
+    },
+
     updateImpostorSuggestion() {
         const playerCount = parseInt(document.getElementById('playerCount').value);
         const suggestionBadge = document.getElementById('impostorSuggestion');
@@ -401,12 +395,7 @@ const game = {
             return;
         }
 
-        let suggested;
-        if (playerCount <= 5) suggested = 1;
-        else if (playerCount <= 8) suggested = 2;
-        else if (playerCount <= 12) suggested = 3;
-        else suggested = Math.floor(playerCount * 0.25);
-
+        const suggested = this.suggestedImpostorCount(playerCount);
         impostorInput.max = Math.floor(playerCount / 2);
         suggestionBadge.textContent = `Sugerido: ${suggested}`;
         suggestionBadge.setAttribute('data-suggested', suggested);
@@ -501,14 +490,16 @@ const game = {
         if (!this.sessionActive) {
             this.sessionActive = true;
             this.sessionRounds = [];
-            this.sessionStartTime = new Date();
+            this.sessionScores = {};
+            this.recentImpostors = [];
+            this.previousImpostors = [];
             this.currentRound = 1;
         }
 
+        this.roundClosed = false;
         this.selectImpostors();
         this.selectSecretWord();
         this.currentPlayerIndex = 0;
-        this.allClues = [];
 
         this.showScreen('screen-reveal');
         this.updateRevealScreen();
@@ -516,20 +507,17 @@ const game = {
 
     // --- Algorithms ---
 
-    shuffleArray(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [arr[i], arr[j]] = [arr[j], arr[i]];
-        }
-        return arr;
-    },
-
     selectImpostors() {
         this.players.forEach(p => p.isImpostor = false);
         this.impostorIndexes = [];
 
-        const indices = [...Array(this.players.length).keys()];
-        const weights = indices.map(idx => this.recentImpostors.includes(idx) ? 0.3 : 1.0);
+        // Peso reducido si fue impostor en la ronda anterior (0.15) o hace dos rondas (0.5),
+        // por nombre para que siga funcionando si se editan los jugadores entre rondas
+        const weights = this.players.map(p => {
+            if (this.recentImpostors.includes(p.name)) return 0.15;
+            if (this.previousImpostors.includes(p.name)) return 0.5;
+            return 1.0;
+        });
 
         for (let i = 0; i < this.impostorCount; i++) {
             let random = Math.random() * weights.reduce((s, w) => s + w, 0);
@@ -544,7 +532,8 @@ const game = {
                 }
             }
         }
-        this.recentImpostors = [...this.impostorIndexes];
+        this.previousImpostors = [...this.recentImpostors];
+        this.recentImpostors = this.players.filter(p => p.isImpostor).map(p => p.name);
     },
 
     selectSecretWord() {
@@ -598,55 +587,99 @@ const game = {
     revealWord() {
         const player = this.players[this.currentPlayerIndex];
         const wordDisplay = document.getElementById('wordDisplay');
-        const btn = document.querySelector('#screen-word .btn-primary');
+        const btn = document.getElementById('nextPlayerBtn');
+        const isLast = this.currentPlayerIndex === this.players.length - 1;
 
-        // Suspense: show loading animation first
-        wordDisplay.innerHTML = `<div class="suspense-reveal"><div class="suspense-dots"><span>.</span><span>.</span><span>.</span></div></div>`;
-        if (btn) btn.style.display = 'none';
+        // La tarjeta del impostor usa el mismo color y sonido que las demás:
+        // cualquier diferencia visible o audible delataría el rol a los que están cerca
+        let cardHTML;
+        if (player.isImpostor) {
+            cardHTML = `
+                <div class="word-card crewmate">
+                    <h1>🎭 ERES EL IMPOSTOR</h1>
+                    <p style="font-size: 1.2rem; margin-top: 20px;">
+                        Escucha las pistas de los demás e intenta adivinar la palabra secreta.
+                        Debes dar pistas convincentes sin saber cuál es la palabra.
+                    </p>
+                    <div class="impostor-tips">
+                        <strong>Tips:</strong>
+                        <ul>
+                            <li>Da pistas vagas pero creíbles</li>
+                            <li>Imita el estilo de otros jugadores</li>
+                            <li>No seas demasiado específico</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        } else {
+            cardHTML = `
+                <div class="word-card crewmate">
+                    <h1>🔍 TU PALABRA ES:</h1>
+                    <div class="secret-word">${this.secretWord}</div>
+                    <p style="font-size: 1rem; margin-top: 20px; opacity: 0.9;">
+                        Da pistas que ayuden a otros a identificar al impostor,<br>
+                        pero no reveles la palabra directamente.
+                    </p>
+                    <div class="crewmate-tips">
+                        <strong>Tips:</strong>
+                        <ul>
+                            <li>Sé específico pero no obvio</li>
+                            <li>Evita sinónimos directos</li>
+                            <li>Piensa en características únicas</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        wordDisplay.innerHTML = `
+            <p class="hold-hint"><strong>${player.name}</strong>, tu rol se muestra solo mientras presionás</p>
+            <div class="hold-area" id="holdArea">
+                <div class="hold-placeholder" id="holdPlaceholder">
+                    <span class="hold-lock">🔒</span>
+                    <span class="hold-text">MANTENÉ PRESIONADO<br>PARA VER TU ROL</span>
+                </div>
+                <div class="hold-card" id="holdCard" style="display: none;">${cardHTML}</div>
+            </div>
+            <p class="warning hold-warning">Al soltar se oculta: así podés pasar el celular tranquilo</p>
+        `;
+
+        if (btn) {
+            btn.textContent = isLast ? '🎭 ¡A JUGAR!' : 'SIGUIENTE JUGADOR';
+            btn.disabled = true;
+        }
+
+        this._wordSoundPlayed = false;
+        this.setupHoldToReveal();
         this.showScreen('screen-word');
+    },
 
-        setTimeout(() => {
-            this.playSound('reveal');
-            if (player.isImpostor) {
-                wordDisplay.innerHTML = `
-                    <div class="word-card crewmate">
-                        <h1>🎭 ERES EL IMPOSTOR</h1>
-                        <p style="font-size: 1.2rem; margin-top: 20px;">
-                            Escucha las pistas de los demás e intenta adivinar la palabra secreta.
-                            Debes dar pistas convincentes sin saber cuál es la palabra.
-                        </p>
-                        <div class="impostor-tips">
-                            <strong>Tips:</strong>
-                            <ul>
-                                <li>Da pistas vagas pero creíbles</li>
-                                <li>Imita el estilo de otros jugadores</li>
-                                <li>No seas demasiado específico</li>
-                            </ul>
-                        </div>
-                    </div>
-                `;
-            } else {
-                wordDisplay.innerHTML = `
-                    <div class="word-card crewmate">
-                        <h1>🔍 TU PALABRA ES:</h1>
-                        <div class="secret-word">${this.secretWord}</div>
-                        <p style="font-size: 1rem; margin-top: 20px; opacity: 0.9;">
-                            Da pistas que ayuden a otros a identificar al impostor,<br>
-                            pero no reveles la palabra directamente.
-                        </p>
-                        <div class="crewmate-tips">
-                            <strong>Tips:</strong>
-                            <ul>
-                                <li>Sé específico pero no obvio</li>
-                                <li>Evita sinónimos directos</li>
-                                <li>Piensa en características únicas</li>
-                            </ul>
-                        </div>
-                    </div>
-                `;
+    setupHoldToReveal() {
+        const holdArea = document.getElementById('holdArea');
+        const placeholder = document.getElementById('holdPlaceholder');
+        const card = document.getElementById('holdCard');
+        const btn = document.getElementById('nextPlayerBtn');
+
+        const show = (e) => {
+            e.preventDefault();
+            placeholder.style.display = 'none';
+            card.style.display = 'block';
+            if (!this._wordSoundPlayed) {
+                this.playSound('reveal');
+                this._wordSoundPlayed = true;
             }
-            if (btn) btn.style.display = '';
-        }, 800);
+            if (btn) btn.disabled = false;
+        };
+        const hide = () => {
+            card.style.display = 'none';
+            placeholder.style.display = 'flex';
+        };
+
+        holdArea.addEventListener('pointerdown', show);
+        holdArea.addEventListener('pointerup', hide);
+        holdArea.addEventListener('pointerleave', hide);
+        holdArea.addEventListener('pointercancel', hide);
+        holdArea.addEventListener('contextmenu', e => e.preventDefault());
     },
 
     nextPlayer() {
@@ -679,11 +712,65 @@ const game = {
             document.getElementById('totalRoundsPlayed').textContent = this.sessionRounds.length;
         }
 
+        this.updateFinalScreenState();
+        this.renderScoreboard();
         this.showScreen('screen-final');
     },
 
     generatePlayOrder() {
-        return this.shuffleArray([...this.players]);
+        // Mantiene el orden de la lista y solo sortea quién arranca.
+        // El impostor puede arrancar, pero con probabilidad baja (peso 0.2 vs 1.0):
+        // si nunca pudiera, arrancar primero probaría inocencia.
+        const weights = this.players.map(p => p.isImpostor ? 0.2 : 1.0);
+        let random = Math.random() * weights.reduce((s, w) => s + w, 0);
+        let start = 0;
+        for (let i = 0; i < weights.length; i++) {
+            random -= weights[i];
+            if (random <= 0) {
+                start = i;
+                break;
+            }
+        }
+        return [...this.players.slice(start), ...this.players.slice(0, start)];
+    },
+
+    updateFinalScreenState() {
+        const declareBtn = document.getElementById('declareWinnerBtn');
+        const result = document.getElementById('roundResult');
+        if (this.roundClosed) {
+            declareBtn.style.display = 'none';
+            result.style.display = 'block';
+        } else {
+            declareBtn.style.display = '';
+            result.style.display = 'none';
+            result.innerHTML = '';
+        }
+    },
+
+    renderScoreboard() {
+        const board = document.getElementById('scoreboard');
+        const entries = Object.entries(this.sessionScores);
+
+        if (!this.sessionActive || entries.length === 0) {
+            board.style.display = 'none';
+            board.innerHTML = '';
+            return;
+        }
+
+        entries.sort((a, b) => b[1] - a[1]);
+        const maxScore = entries[0][1];
+        board.style.display = 'block';
+        board.innerHTML = `
+            <h3>🏆 Puntaje de la sesión</h3>
+            <div class="scoreboard-list">
+                ${entries.map(([name, points]) => `
+                    <div class="scoreboard-item ${points === maxScore && maxScore > 0 ? 'leader' : ''}">
+                        <span class="scoreboard-name">${name}</span>
+                        <span class="scoreboard-points">${points}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
     },
 
     // --- New round ---
@@ -695,17 +782,64 @@ const game = {
         document.getElementById('nextRoundNumber').textContent = this.currentRound;
         document.getElementById('impostorCountRound').value = this.impostorCount;
         document.getElementById('categoryRound').value = this.category;
+        document.getElementById('customWordsRound').value = this.customWordsList.join(', ');
+        document.getElementById('customWordsSectionRound').style.display =
+            this.category === 'personalizada' ? 'block' : 'none';
 
-        const suggestionBadge = document.getElementById('impostorSuggestionRound');
-        const playerCount = this.players.length;
-        let suggested;
-        if (playerCount <= 5) suggested = 1;
-        else if (playerCount <= 8) suggested = 2;
-        else if (playerCount <= 12) suggested = 3;
-        else suggested = Math.floor(playerCount * 0.25);
-        suggestionBadge.textContent = `Sugerido: ${suggested}`;
+        this.editablePlayers = this.players.map(p => p.name);
+        this.renderPlayerEditor();
+        this.updateImpostorSuggestionRound();
 
         this.showScreen('screen-new-round');
+    },
+
+    updateImpostorSuggestionRound() {
+        const suggested = this.suggestedImpostorCount(this.editablePlayers.length);
+        document.getElementById('impostorSuggestionRound').textContent = `Sugerido: ${suggested}`;
+    },
+
+    // --- Player editing between rounds ---
+
+    renderPlayerEditor() {
+        const list = document.getElementById('playerEditList');
+        document.getElementById('playerEditCount').textContent = this.editablePlayers.length;
+        list.innerHTML = this.editablePlayers.map((name, index) => `
+            <div class="player-edit-item">
+                <span class="player-name">${name}</span>
+                <button class="btn-remove-player" onclick="game.removePlayer(${index})" aria-label="Quitar jugador">✕</button>
+            </div>
+        `).join('');
+    },
+
+    removePlayer(index) {
+        if (this.editablePlayers.length <= 4) {
+            this.showToast('Se necesitan mínimo 4 jugadores', 'error');
+            return;
+        }
+        this.playSound('click');
+        this.editablePlayers.splice(index, 1);
+        this.renderPlayerEditor();
+        this.updateImpostorSuggestionRound();
+    },
+
+    addPlayer() {
+        const input = document.getElementById('newPlayerName');
+        const name = input.value.trim();
+
+        if (!name) {
+            this.showToast('Escribí el nombre del jugador', 'error');
+            return;
+        }
+        if (this.editablePlayers.some(n => n.toLowerCase() === name.toLowerCase())) {
+            this.showToast('Ya hay un jugador con ese nombre', 'error');
+            return;
+        }
+
+        this.playSound('click');
+        this.editablePlayers.push(name);
+        input.value = '';
+        this.renderPlayerEditor();
+        this.updateImpostorSuggestionRound();
     },
 
     handleCategoryChangeRound() {
@@ -716,9 +850,13 @@ const game = {
     },
 
     startNewRound() {
-        this.playSound('success');
         this.impostorCount = parseInt(document.getElementById('impostorCountRound').value);
         this.category = document.getElementById('categoryRound').value;
+
+        if (this.editablePlayers.length < 4) {
+            this.showToast('Se necesitan al menos 4 jugadores', 'error');
+            return;
+        }
 
         if (this.category === 'personalizada') {
             const customWordsText = document.getElementById('customWordsRound').value.trim();
@@ -733,12 +871,24 @@ const game = {
             }
         }
 
-        const maxImpostors = Math.floor(this.players.length / 2);
+        const maxImpostors = Math.floor(this.editablePlayers.length / 2);
+        if (!this.impostorCount || this.impostorCount < 1) {
+            this.showToast('Debe haber al menos 1 impostor', 'error');
+            return;
+        }
         if (this.impostorCount > maxImpostors) {
-            this.showToast(`Máximo ${maxImpostors} impostores para ${this.players.length} jugadores`, 'error');
+            this.showToast(`Máximo ${maxImpostors} impostores para ${this.editablePlayers.length} jugadores`, 'error');
             return;
         }
 
+        this.playSound('success');
+        this.players = this.editablePlayers.map((name, index) => ({
+            id: index + 1,
+            name: name,
+            isImpostor: false
+        }));
+
+        this.roundClosed = false;
         this.selectImpostors();
         this.selectSecretWord();
         this.currentPlayerIndex = 0;
@@ -775,14 +925,17 @@ const game = {
                 onClick: () => {
                     this.sessionActive = false;
                     this.sessionRounds = [];
-                    this.sessionStartTime = null;
+                    this.sessionScores = {};
                     this.currentRound = 0;
+                    this.roundClosed = false;
                     this.players = [];
+                    this.editablePlayers = [];
                     this.secretWord = '';
                     this.category = '';
                     this.currentPlayerIndex = 0;
                     this.usedWords = [];
                     this.recentImpostors = [];
+                    this.previousImpostors = [];
                     this.showScreen('screen-start');
                 }
             },
@@ -803,6 +956,9 @@ const game = {
     },
 
     declareWinner(winner) {
+        if (this.roundClosed) return;
+        this.roundClosed = true;
+
         const roundData = {
             roundNumber: this.currentRound,
             word: this.secretWord,
@@ -812,10 +968,24 @@ const game = {
             timestamp: new Date()
         };
         this.sessionRounds.push(roundData);
+
+        // Puntaje individual: +1 a cada jugador del bando ganador
+        this.players.forEach(p => {
+            const won = (winner === 'impostor') === p.isImpostor;
+            if (this.sessionScores[p.name] === undefined) this.sessionScores[p.name] = 0;
+            if (won) this.sessionScores[p.name]++;
+        });
+
         this.saveGameToHistory(winner);
 
-        // Hide winner section
+        // Cerrar la ronda en la pantalla final
         document.getElementById('winnerSection').classList.remove('winner-visible');
+        document.getElementById('totalRoundsPlayed').textContent = this.sessionRounds.length;
+        this.updateFinalScreenState();
+        document.getElementById('roundResult').innerHTML = winner === 'impostor'
+            ? '🎭 Ronda cerrada — Ganó el Impostor'
+            : '👥 Ronda cerrada — Ganó el Grupo';
+        this.renderScoreboard();
 
         // Show celebration overlay
         this.showCelebration(winner);
@@ -884,8 +1054,26 @@ const game = {
                     </div>
                 </div>
             </div>
-            <h4 style="margin: 20px 0 10px 0; text-align: center; opacity: 0.8;">Historial de Rondas</h4>
         `;
+
+        const scoreEntries = Object.entries(this.sessionScores).sort((a, b) => b[1] - a[1]);
+        if (scoreEntries.length > 0) {
+            html += `
+                <div class="scoreboard" style="display: block;">
+                    <h3>🏆 Puntaje individual</h3>
+                    <div class="scoreboard-list">
+                        ${scoreEntries.map(([name, points]) => `
+                            <div class="scoreboard-item">
+                                <span class="scoreboard-name">${name}</span>
+                                <span class="scoreboard-points">${points}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `<h4 style="margin: 20px 0 10px 0; text-align: center; opacity: 0.8;">Historial de Rondas</h4>`;
 
         html += this.sessionRounds.map(round => {
             const winnerText = round.winner === 'impostor' ? '🎭 Impostor' : '👥 Grupo';
@@ -937,56 +1125,6 @@ const game = {
                 </div>
             `;
         }).join('');
-    },
-
-    async shareGame() {
-        let shareText = `🎭 EL IMPOSTOR - Juego de pistas\n\n`;
-        shareText += `📊 Estadísticas de la partida:\n`;
-        shareText += `Jugadores: ${this.players.map(p => p.name).join(', ')}\n`;
-        shareText += `Palabra: ${this.secretWord}\n`;
-        shareText += `Categoría: ${this.category}\n\n`;
-        shareText += `¡Juega con nosotros! 🎮`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'El Impostor - Juego de Pistas',
-                    text: shareText,
-                    url: window.location.href
-                });
-                this.playSound('success');
-            } catch (err) {
-                if (err.name !== 'AbortError') {
-                    this.copyToClipboard(shareText);
-                }
-            }
-        } else {
-            this.copyToClipboard(shareText);
-        }
-    },
-
-    copyToClipboard(text) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                this.showToast('¡Texto copiado al portapapeles!', 'success');
-            }).catch(() => {
-                this.showToast('No se pudo copiar el texto', 'error');
-            });
-        } else {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                this.showToast('¡Texto copiado al portapapeles!', 'success');
-            } catch (err) {
-                this.showToast('No se pudo copiar el texto', 'error');
-            }
-            document.body.removeChild(textArea);
-        }
     },
 
     renderPlayerStats() {
