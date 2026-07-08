@@ -1,4 +1,4 @@
-const CACHE_NAME = 'impostor-v2.1.0';
+const CACHE_NAME = 'impostor-v2.1.1';
 const urlsToCache = [
   './',
   './index.html',
@@ -36,35 +36,22 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network first, fallback to cache (offline support)
+// Cache-first kept stale versions alive on installed PWAs (especially iOS);
+// network-first ensures updates arrive on next launch while staying usable offline
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-
-        // Clone the request
-        const fetchRequest = event.request.clone();
-
-        return fetch(fetchRequest).then(response => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // Clone the response
+        if (response && response.status === 200 && response.type === 'basic') {
           const responseToCache = response.clone();
-
           caches.open(CACHE_NAME)
             .then(cache => {
               cache.put(event.request, responseToCache);
             });
-
-          return response;
-        });
+        }
+        return response;
       })
+      .catch(() => caches.match(event.request))
   );
 });
